@@ -1,6 +1,7 @@
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import orbithaLogo from "@/assets/orbitha-logo.jpeg";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -20,10 +21,12 @@ const Hero = () => {
       <div className="relative max-w-4xl mx-auto text-center">
         {/* Logo */}
         <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-card border border-border mb-8 opacity-0 animate-fade-in-up" style={{ animationFillMode: "forwards" }}>
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center">
-            <Zap className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="font-semibold text-foreground">N8N Expert Agent</span>
+          <img 
+            src={orbithaLogo} 
+            alt="Orbitha" 
+            className="w-10 h-10 rounded-lg object-cover" 
+          />
+          <span className="font-semibold text-foreground">N8N Expert Agent <span className="font-normal text-muted-foreground">by Orbitha</span></span>
         </div>
 
         {/* Main heading */}
