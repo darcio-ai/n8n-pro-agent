@@ -5,7 +5,7 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
-import { Bot, Zap } from "lucide-react";
+import { Bot, Zap, Plug, CreditCard, Repeat, Settings } from "lucide-react";
 
 interface Message {
   id: string;
@@ -19,7 +19,62 @@ interface Conversation {
   created_at: string;
 }
 
+interface QuickCategory {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  suggestions: string[];
+  color: string;
+}
+
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+const quickCategories: QuickCategory[] = [
+  {
+    icon: <Plug className="w-5 h-5" />,
+    title: "MCP",
+    description: "Model Context Protocol",
+    color: "from-blue-500 to-cyan-500",
+    suggestions: [
+      "Como configurar MCP com n8n?",
+      "Resolver timeout de MCP",
+      "Autenticação MCP não funciona",
+    ],
+  },
+  {
+    icon: <Settings className="w-5 h-5" />,
+    title: "CRM",
+    description: "HubSpot, Salesforce, Pipedrive",
+    color: "from-green-500 to-emerald-500",
+    suggestions: [
+      "Rate limit no HubSpot, como resolver?",
+      "Sincronizar leads do Salesforce",
+      "Integrar Pipedrive com n8n",
+    ],
+  },
+  {
+    icon: <CreditCard className="w-5 h-5" />,
+    title: "Pagamentos",
+    description: "Stripe, PayPal, MercadoPago",
+    color: "from-purple-500 to-pink-500",
+    suggestions: [
+      "Verificar webhook signature do Stripe",
+      "Integrar MercadoPago com n8n",
+      "Processar pagamentos recorrentes",
+    ],
+  },
+  {
+    icon: <Repeat className="w-5 h-5" />,
+    title: "Padrões",
+    description: "Circuit Breaker, Retry, Saga",
+    color: "from-orange-500 to-red-500",
+    suggestions: [
+      "Implementar circuit breaker no n8n",
+      "Retry com exponential backoff",
+      "Saga pattern para transações",
+    ],
+  },
+];
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -61,21 +116,18 @@ const Chat = () => {
 
   const handleSelectConversation = (id: string) => {
     setCurrentConversationId(id);
-    // In simplified mode, messages are not persisted
     setMessages([]);
   };
 
   const sendMessage = async (content: string) => {
     let conversationId = currentConversationId;
 
-    // Create conversation if needed
     if (!conversationId) {
       const title = content.length > 50 ? content.substring(0, 50) + "..." : content;
       conversationId = createConversation(title);
       setCurrentConversationId(conversationId);
     }
 
-    // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -83,7 +135,6 @@ const Chat = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    // Stream assistant response
     setIsLoading(true);
     let assistantContent = "";
 
@@ -174,7 +225,6 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
         currentConversationId={currentConversationId}
@@ -183,30 +233,63 @@ const Chat = () => {
         onDeleteConversation={handleDeleteConversation}
       />
 
-      {/* Main chat area */}
       <div className="flex-1 flex flex-col">
         <ChatHeader />
 
-        {/* Messages area */}
         <ScrollArea className="flex-1" ref={scrollRef}>
           <div className="max-w-4xl mx-auto py-4">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center mb-6 shadow-lg glow-coral">
                   <Zap className="w-10 h-10 text-primary-foreground" />
                 </div>
                 <h2 className="text-2xl font-bold mb-2 text-foreground">
                   Olá! Sou seu Expert em n8n
                 </h2>
-                <p className="text-muted-foreground max-w-md mb-6">
-                  Posso ajudar com workflows, integrações MCP, automações CRM e gateways de pagamento. 
-                  Como posso ajudar você hoje?
+                <p className="text-muted-foreground max-w-md mb-8">
+                  Especialista em workflows, integrações MCP, automações CRM e gateways de pagamento.
+                  Escolha uma categoria ou faça sua pergunta!
                 </p>
+
+                {/* Quick Categories */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
+                  {quickCategories.map((category) => (
+                    <div
+                      key={category.title}
+                      className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div
+                          className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center text-white`}
+                        >
+                          {category.icon}
+                        </div>
+                        <div className="text-left">
+                          <h3 className="font-semibold text-foreground">{category.title}</h3>
+                          <p className="text-xs text-muted-foreground">{category.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {category.suggestions.map((suggestion) => (
+                          <button
+                            key={suggestion}
+                            onClick={() => sendMessage(suggestion)}
+                            className="px-2.5 py-1 rounded-md bg-muted hover:bg-primary/10 text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* General Suggestions */}
                 <div className="flex flex-wrap gap-2 justify-center">
                   {[
                     "Como configurar um webhook no n8n?",
-                    "Integrar Stripe com n8n",
-                    "Configurar MCP com n8n",
+                    "Melhores práticas de error handling",
+                    "Como debugar workflows complexos?",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}
@@ -242,7 +325,6 @@ const Chat = () => {
           </div>
         </ScrollArea>
 
-        {/* Input area */}
         <ChatInput onSend={sendMessage} isLoading={isLoading} />
       </div>
     </div>
