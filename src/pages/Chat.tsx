@@ -7,6 +7,7 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
+import { ResponseStyle } from "@/components/chat/ResponseStyleSelector";
 import { Bot, Zap, Plug, CreditCard, Repeat, Settings, Loader2 } from "lucide-react";
 import { Message, Conversation, Attachment } from "@/types/chat";
 
@@ -75,9 +76,18 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [responseStyle, setResponseStyle] = useState<ResponseStyle>(() => {
+    return (localStorage.getItem("responseStyle") as ResponseStyle) || "normal";
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  // Save style preference
+  const handleStyleChange = (style: ResponseStyle) => {
+    setResponseStyle(style);
+    localStorage.setItem("responseStyle", style);
+  };
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -325,6 +335,7 @@ const Chat = () => {
             role: m.role,
             content: buildMessageContent(m),
           })),
+          responseStyle,
         }),
       });
 
@@ -501,14 +512,14 @@ const Chat = () => {
                 ))}
                 {isLoading && messages[messages.length - 1]?.role === "user" && (
                   <div className="flex gap-3 p-4">
-                    <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center">
-                      <Bot className="w-5 h-5 text-muted-foreground animate-pulse" />
+                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-zinc-500 dark:text-zinc-400 animate-pulse" />
                     </div>
-                    <div className="bg-card border border-border rounded-xl p-4">
+                    <div className="bg-white dark:bg-zinc-900/50 rounded-xl p-4">
                       <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                       </div>
                     </div>
                   </div>
@@ -518,7 +529,12 @@ const Chat = () => {
           </div>
         </ScrollArea>
 
-        <ChatInput onSend={sendMessage} isLoading={isLoading} />
+        <ChatInput 
+          onSend={sendMessage} 
+          isLoading={isLoading} 
+          responseStyle={responseStyle}
+          onStyleChange={handleStyleChange}
+        />
       </div>
     </div>
   );
