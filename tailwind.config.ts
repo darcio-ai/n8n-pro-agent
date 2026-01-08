@@ -57,13 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // n8n specific colors
+        // Orbitha specific colors
+        orbitha: {
+          cyan: "hsl(var(--orbitha-cyan))",
+          "cyan-glow": "hsl(var(--orbitha-cyan-glow))",
+          purple: "hsl(var(--orbitha-purple))",
+          "purple-glow": "hsl(var(--orbitha-purple-glow))",
+        },
+        // n8n colors kept for compatibility
         n8n: {
-          coral: "hsl(var(--n8n-coral))",
-          "coral-glow": "hsl(var(--n8n-coral-glow))",
           green: "hsl(var(--n8n-green))",
           "green-glow": "hsl(var(--n8n-green-glow))",
-          purple: "hsl(var(--n8n-purple))",
           blue: "hsl(var(--n8n-blue))",
           dark: "hsl(var(--n8n-dark))",
         },

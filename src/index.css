@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* N8N Expert Agent Design System
-   Inspired by n8n's visual identity with coral/orange and green accents
+/* Orbitha Expert Agent Design System
+   Hybrid palette: Orbitha futuristic (cyan/purple) + n8n practical (green)
    All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    /* Light theme - Clean with n8n accent colors */
+    /* Light theme - Clean with Orbitha accent colors */
     --background: 0 0% 98%;
     --foreground: 220 20% 10%;
 
@@ -19,11 +19,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
 
-    /* n8n Coral/Orange as primary */
-    --primary: 6 100% 68%;
+    /* Orbitha Cyan as primary */
+    --primary: 191 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* n8n Green as secondary */
+    /* n8n Green as secondary (kept for success indicators) */
     --secondary: 145 100% 39%;
     --secondary-foreground: 0 0% 100%;
 
@@ -39,16 +39,19 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 6 100% 68%;
+    --ring: 191 100% 50%;
 
     --radius: 0.75rem;
 
-    /* n8n specific colors */
-    --n8n-coral: 6 100% 68%;
-    --n8n-coral-glow: 6 100% 75%;
+    /* Orbitha specific colors */
+    --orbitha-cyan: 191 100% 50%;
+    --orbitha-cyan-glow: 191 100% 60%;
+    --orbitha-purple: 262 83% 58%;
+    --orbitha-purple-glow: 262 83% 68%;
+    
+    /* n8n colors kept for compatibility */
     --n8n-green: 145 100% 39%;
     --n8n-green-glow: 145 100% 50%;
-    --n8n-purple: 262 83% 58%;
     --n8n-blue: 217 91% 60%;
     --n8n-dark: 0 0% 10%;
     --n8n-grid: 220 13% 91%;
@@ -60,80 +63,83 @@
 
     /* Connection line */
     --connection-line: 220 10% 70%;
-    --connection-glow: 145 100% 39%;
+    --connection-glow: 191 100% 50%;
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 220 20% 10%;
-    --sidebar-primary: 6 100% 68%;
+    --sidebar-primary: 191 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 220 20% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 6 100% 68%;
+    --sidebar-ring: 191 100% 50%;
   }
 
   .dark {
-    /* Dark theme - n8n editor style */
-    --background: 0 0% 8%;
+    /* Dark theme - Orbitha futuristic style */
+    --background: 0 0% 4%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 12%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 12%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 95%;
 
-    /* n8n Coral/Orange as primary */
-    --primary: 6 100% 68%;
+    /* Orbitha Cyan as primary */
+    --primary: 191 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     /* n8n Green as secondary */
-    --secondary: 145 100% 39%;
+    --secondary: 145 100% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
+    --muted: 0 0% 12%;
     --muted-foreground: 0 0% 65%;
 
     /* Purple accent */
-    --accent: 262 83% 58%;
+    --accent: 262 83% 65%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 6 100% 68%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 191 100% 50%;
 
-    /* n8n specific colors - dark mode */
-    --n8n-coral: 6 100% 68%;
-    --n8n-coral-glow: 6 100% 75%;
+    /* Orbitha specific colors - dark mode */
+    --orbitha-cyan: 191 100% 50%;
+    --orbitha-cyan-glow: 191 100% 60%;
+    --orbitha-purple: 262 83% 65%;
+    --orbitha-purple-glow: 262 83% 75%;
+    
+    /* n8n colors kept for compatibility */
     --n8n-green: 145 100% 45%;
     --n8n-green-glow: 145 100% 55%;
-    --n8n-purple: 262 83% 65%;
     --n8n-blue: 217 91% 65%;
-    --n8n-dark: 0 0% 8%;
-    --n8n-grid: 0 0% 15%;
+    --n8n-dark: 0 0% 4%;
+    --n8n-grid: 0 0% 12%;
 
     /* Node card styles */
-    --node-bg: 0 0% 14%;
-    --node-border: 0 0% 25%;
+    --node-bg: 0 0% 10%;
+    --node-border: 0 0% 22%;
     --node-shadow: 0 0% 0%;
 
     /* Connection line */
     --connection-line: 0 0% 35%;
-    --connection-glow: 145 100% 50%;
+    --connection-glow: 191 100% 50%;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 10%;
+    --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 6 100% 68%;
+    --sidebar-primary: 191 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 6 100% 68%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 191 100% 50%;
   }
 }
 
@@ -148,7 +154,7 @@
 }
 
 @layer components {
-  /* n8n Grid Background */
+  /* Orbitha Grid Background */
   .n8n-grid-bg {
     background-image: 
       linear-gradient(to right, hsl(var(--n8n-grid)) 1px, transparent 1px),
@@ -184,25 +190,29 @@
     @apply -right-1.5 top-1/2 -translate-y-1/2;
   }
 
-  /* Gradient text */
+  /* Gradient text - Orbitha cyan to purple */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--n8n-coral)), hsl(var(--n8n-coral-glow)));
+    background-image: linear-gradient(135deg, hsl(var(--orbitha-cyan)), hsl(var(--orbitha-purple)));
   }
 
-  /* Primary gradient button */
+  /* Primary gradient button - Orbitha style */
   .btn-gradient {
     @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(var(--n8n-coral)), hsl(var(--n8n-coral-glow)));
+    background: linear-gradient(135deg, hsl(var(--orbitha-cyan)), hsl(var(--orbitha-purple)));
   }
 
   .btn-gradient:hover {
-    box-shadow: 0 0 30px hsl(var(--n8n-coral) / 0.4);
+    box-shadow: 0 0 30px hsl(var(--orbitha-cyan) / 0.4);
   }
 
   /* Glow effects */
-  .glow-coral {
-    box-shadow: 0 0 20px hsl(var(--n8n-coral) / 0.3);
+  .glow-cyan {
+    box-shadow: 0 0 20px hsl(var(--orbitha-cyan) / 0.3);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px hsl(var(--orbitha-purple) / 0.3);
   }
 
   .glow-green {
@@ -230,10 +240,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 3px hsl(var(--n8n-green-glow)));
+    filter: drop-shadow(0 0 3px hsl(var(--orbitha-cyan-glow)));
   }
   50% {
-    filter: drop-shadow(0 0 8px hsl(var(--n8n-green-glow)));
+    filter: drop-shadow(0 0 8px hsl(var(--orbitha-cyan-glow)));
   }
 }
 
