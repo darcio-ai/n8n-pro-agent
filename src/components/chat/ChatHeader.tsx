@@ -1,43 +1,7 @@
-import { Zap, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Zap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 
-interface ChatHeaderProps {
-  userEmail?: string;
-}
-
-const ChatHeader = ({ userEmail }: ChatHeaderProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Erro ao sair",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    navigate("/");
-  };
-
-  const getInitials = (email?: string) => {
-    if (!email) return "U";
-    return email.charAt(0).toUpperCase();
-  };
-
+const ChatHeader = () => {
   return (
     <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
       {/* Logo and title */}
@@ -55,30 +19,7 @@ const ChatHeader = ({ userEmail }: ChatHeaderProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-lg">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {getInitials(userEmail)}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="px-2 py-1.5 text-sm text-muted-foreground">
-              {userEmail}
-            </div>
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              Sair
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <ThemeToggle />
     </header>
   );
 };
