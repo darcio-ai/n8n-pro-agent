@@ -1,39 +1,28 @@
 import { Bot, User, Copy, Check, FileText, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Message, Attachment } from "@/types/chat";
-import DOMPurify from 'dompurify';
-import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import typescript from 'highlight.js/lib/languages/typescript';
-import json from 'highlight.js/lib/languages/json';
-import sql from 'highlight.js/lib/languages/sql';
-import bash from 'highlight.js/lib/languages/bash';
-import css from 'highlight.js/lib/languages/css';
-import xml from 'highlight.js/lib/languages/xml';
-import python from 'highlight.js/lib/languages/python';
-
-// Register languages
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('js', javascript);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('ts', typescript);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('bash', bash);
-hljs.registerLanguage('sh', bash);
-hljs.registerLanguage('css', css);
-hljs.registerLanguage('html', xml);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('py', python);
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatMessageProps {
   message: Message;
 }
 
+const languageMap: Record<string, string> = {
+  js: 'javascript',
+  ts: 'typescript',
+  py: 'python',
+  sh: 'bash',
+  shell: 'bash',
+  yml: 'yaml',
+  md: 'markdown',
+};
+
 const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   const [copied, setCopied] = useState(false);
+  
+  const normalizedLanguage = languageMap[language || ''] || language || 'text';
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -41,37 +30,31 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const highlightedCode = useMemo(() => {
-    try {
-      let html: string;
-      if (language && hljs.getLanguage(language)) {
-        html = hljs.highlight(code, { language }).value;
-      } else {
-        html = hljs.highlightAuto(code).value;
-      }
-      // Sanitize highlighted HTML to prevent XSS
-      return DOMPurify.sanitize(html, { 
-        ALLOWED_TAGS: ['span'], 
-        ALLOWED_ATTR: ['class'] 
-      });
-    } catch {
-      // Return escaped code on error
-      return DOMPurify.sanitize(code);
-    }
-  }, [code, language]);
+  const customStyle: React.CSSProperties = {
+    margin: 0,
+    padding: '16px',
+    fontSize: '14px',
+    lineHeight: '1.5',
+    borderRadius: '0 0 8px 8px',
+    fontFamily: '"Fira Code", "JetBrains Mono", Consolas, monospace',
+    background: '#282c34',
+  };
 
   return (
-    <div className="relative group my-4 rounded-lg overflow-hidden">
-      {/* Header - minimal, no border */}
-      <div className="flex items-center justify-between px-4 py-2 bg-zinc-100 dark:bg-zinc-800/80">
-        <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-          {language || "code"}
+    <div className="my-4 rounded-lg overflow-hidden shadow-md">
+      {/* Header escuro */}
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#1e1e1e' }}>
+        <span className="text-xs font-mono text-zinc-400">
+          {normalizedLanguage}
         </span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 
-            hover:text-zinc-700 dark:hover:text-zinc-200 
-            opacity-0 group-hover:opacity-100 transition-all duration-200"
+          className={cn(
+            "flex items-center gap-1.5 text-xs transition-all duration-200",
+            copied 
+              ? "text-green-400" 
+              : "text-zinc-400 hover:text-zinc-200"
+          )}
         >
           {copied ? (
             <>
@@ -86,17 +69,19 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
           )}
         </button>
       </div>
-      {/* Code - no border, subtle background */}
-      <pre className="p-4 overflow-x-auto bg-zinc-50 dark:bg-zinc-900/60">
-        <code 
-          className="text-sm font-mono hljs"
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
-        />
-      </pre>
+      {/* Código com syntax highlighting */}
+      <SyntaxHighlighter
+        language={normalizedLanguage}
+        style={atomDark}
+        customStyle={customStyle}
+        showLineNumbers={false}
+        wrapLongLines={false}
+      >
+        {code}
+      </SyntaxHighlighter>
     </div>
   );
 };
-
 const parseMarkdown = (content: string) => {
   const elements: React.ReactNode[] = [];
   const lines = content.split("\n");
