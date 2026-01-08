@@ -1,11 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
-import { Bot, Zap, Plug, CreditCard, Repeat, Settings } from "lucide-react";
+import { Bot, Zap, Plug, CreditCard, Repeat, Settings, Loader2 } from "lucide-react";
 import { Message, Conversation, Attachment } from "@/types/chat";
 
 interface QuickCategory {
@@ -17,6 +19,7 @@ interface QuickCategory {
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const MAX_CONTEXT_MESSAGES = 20;
 
 const quickCategories: QuickCategory[] = [
   {
@@ -70,8 +73,11 @@ const Chat = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -80,14 +86,92 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const createConversation = (title: string): string => {
-    const newConversation: Conversation = {
-      id: crypto.randomUUID(),
-      title,
-      created_at: new Date().toISOString(),
+  // Load conversations from database
+  useEffect(() => {
+    const loadConversations = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("conversations")
+          .select("*")
+          .order("updated_at", { ascending: false });
+
+        if (error) throw error;
+        setConversations(data || []);
+      } catch (error) {
+        console.error("Error loading conversations:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as conversas.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingConversations(false);
+      }
     };
-    setConversations((prev) => [newConversation, ...prev]);
-    return newConversation.id;
+
+    loadConversations();
+  }, [user, toast]);
+
+  // Load messages when selecting a conversation
+  const loadMessages = useCallback(async (conversationId: string) => {
+    setIsLoadingMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+
+      const formattedMessages: Message[] = (data || []).map((msg) => ({
+        id: msg.id,
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+        attachments: (msg.attachments as unknown as Attachment[]) || undefined,
+      }));
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Error loading messages:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as mensagens.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  }, [toast]);
+
+  const createConversation = async (title: string): Promise<string | null> => {
+    if (!user) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from("conversations")
+        .insert({
+          title,
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setConversations((prev) => [data, ...prev]);
+      return data.id;
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar a conversa.",
+        variant: "destructive",
+      });
+      return null;
+    }
   };
 
   const handleNewConversation = () => {
@@ -95,17 +179,68 @@ const Chat = () => {
     setMessages([]);
   };
 
-  const handleDeleteConversation = (id: string) => {
-    setConversations((prev) => prev.filter((c) => c.id !== id));
-    if (currentConversationId === id) {
-      setCurrentConversationId(null);
-      setMessages([]);
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("conversations")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (currentConversationId === id) {
+        setCurrentConversationId(null);
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a conversa.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleSelectConversation = (id: string) => {
+  const handleSelectConversation = async (id: string) => {
     setCurrentConversationId(id);
-    setMessages([]);
+    await loadMessages(id);
+  };
+
+  const saveMessage = async (
+    conversationId: string,
+    role: "user" | "assistant",
+    content: string,
+    attachments?: Attachment[]
+  ) => {
+    try {
+      const attachmentsJson = attachments 
+        ? JSON.parse(JSON.stringify(attachments)) 
+        : [];
+      
+      const { error } = await supabase.from("messages").insert({
+        conversation_id: conversationId,
+        role,
+        content,
+        attachments: attachmentsJson,
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  };
+
+  const updateConversationTimestamp = async (conversationId: string) => {
+    try {
+      await supabase
+        .from("conversations")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", conversationId);
+    } catch (error) {
+      console.error("Error updating conversation timestamp:", error);
+    }
   };
 
   const sendMessage = async (content: string, attachments?: Attachment[]) => {
@@ -113,7 +248,8 @@ const Chat = () => {
 
     if (!conversationId) {
       const title = content.length > 50 ? content.substring(0, 50) + "..." : content;
-      conversationId = createConversation(title || "Nova conversa");
+      conversationId = await createConversation(title || "Nova conversa");
+      if (!conversationId) return;
       setCurrentConversationId(conversationId);
     }
 
@@ -125,6 +261,9 @@ const Chat = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
 
+    // Save user message to database
+    await saveMessage(conversationId, "user", content, attachments);
+
     setIsLoading(true);
     let assistantContent = "";
 
@@ -132,13 +271,11 @@ const Chat = () => {
     const buildMessageContent = (msg: Message) => {
       if (msg.attachments && msg.attachments.length > 0) {
         const parts: any[] = [];
-        
-        // Add text if present
+
         if (msg.content) {
           parts.push({ type: "text", text: msg.content });
         }
-        
-        // Add images
+
         msg.attachments
           .filter((a) => a.type === "image")
           .forEach((a) => {
@@ -147,12 +284,10 @@ const Chat = () => {
               image_url: { url: a.url },
             });
           });
-        
-        // Add file contents as text (for text-based files)
+
         msg.attachments
           .filter((a) => a.type === "file")
           .forEach((a) => {
-            // Extract base64 content and decode if it's text
             if (a.mimeType.startsWith("text/") || a.mimeType === "application/json") {
               try {
                 const base64Content = a.url.split(",")[1];
@@ -168,11 +303,15 @@ const Chat = () => {
               parts.push({ type: "text", text: `[Arquivo anexado: ${a.name}]` });
             }
           });
-        
+
         return parts.length === 1 && parts[0].type === "text" ? parts[0].text : parts;
       }
       return msg.content;
     };
+
+    // Get context messages (limit to last N for API call)
+    const allMessages = [...messages, userMessage];
+    const contextMessages = allMessages.slice(-MAX_CONTEXT_MESSAGES);
 
     try {
       const response = await fetch(CHAT_URL, {
@@ -182,7 +321,7 @@ const Chat = () => {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
+          messages: contextMessages.map((m) => ({
             role: m.role,
             content: buildMessageContent(m),
           })),
@@ -247,6 +386,12 @@ const Chat = () => {
           }
         }
       }
+
+      // Save assistant message to database after streaming is complete
+      if (assistantContent) {
+        await saveMessage(conversationId, "assistant", assistantContent);
+        await updateConversationTimestamp(conversationId);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -258,6 +403,14 @@ const Chat = () => {
       setIsLoading(false);
     }
   };
+
+  if (isLoadingConversations) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex bg-background">
@@ -274,7 +427,11 @@ const Chat = () => {
 
         <ScrollArea className="flex-1" ref={scrollRef}>
           <div className="max-w-4xl mx-auto py-4">
-            {messages.length === 0 ? (
+            {isLoadingMessages ? (
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center mb-6 shadow-lg glow-coral">
                   <Zap className="w-10 h-10 text-primary-foreground" />
