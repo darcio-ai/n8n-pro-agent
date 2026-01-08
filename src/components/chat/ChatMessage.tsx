@@ -2,6 +2,7 @@ import { Bot, User, Copy, Check, FileText, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Message, Attachment } from "@/types/chat";
+import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -42,12 +43,20 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
 
   const highlightedCode = useMemo(() => {
     try {
+      let html: string;
       if (language && hljs.getLanguage(language)) {
-        return hljs.highlight(code, { language }).value;
+        html = hljs.highlight(code, { language }).value;
+      } else {
+        html = hljs.highlightAuto(code).value;
       }
-      return hljs.highlightAuto(code).value;
+      // Sanitize highlighted HTML to prevent XSS
+      return DOMPurify.sanitize(html, { 
+        ALLOWED_TAGS: ['span'], 
+        ALLOWED_ATTR: ['class'] 
+      });
     } catch {
-      return code;
+      // Return escaped code on error
+      return DOMPurify.sanitize(code);
     }
   }, [code, language]);
 
