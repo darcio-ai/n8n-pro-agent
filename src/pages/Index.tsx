@@ -18,7 +18,18 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border">
         <div className="max-w-6xl mx-auto text-center text-muted-foreground text-sm">
-          <p>© 2025 N8N Expert Agent. Especialista em automações n8n.</p>
+          <p>
+            © 2025{" "}
+            <a 
+              href="https://orbitha.io" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-primary transition-colors underline"
+            >
+              Orbitha
+            </a>{" "}
+            | N8N Expert Agent - Especialista em automações n8n
+          </p>
         </div>
       </footer>
     </div>
