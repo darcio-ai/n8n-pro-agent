@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatHeader from "@/components/chat/ChatHeader";
@@ -8,7 +6,6 @@ import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import { Bot, Zap } from "lucide-react";
-import { User, Session } from "@supabase/supabase-js";
 
 interface Message {
   id: string;
@@ -25,52 +22,12 @@ interface Conversation {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const Chat = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Auth check
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  // Load conversations
-  useEffect(() => {
-    if (user) {
-      loadConversations();
-    }
-  }, [user]);
-
-  // Load messages when conversation changes
-  useEffect(() => {
-    if (currentConversationId) {
-      loadMessages(currentConversationId);
-    } else {
-      setMessages([]);
-    }
-  }, [currentConversationId]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -79,77 +36,14 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const loadConversations = async () => {
-    const { data, error } = await supabase
-      .from("conversations")
-      .select("*")
-      .order("updated_at", { ascending: false });
-
-    if (error) {
-      console.error("Error loading conversations:", error);
-      return;
-    }
-
-    setConversations(data || []);
-    
-    // Select most recent conversation if exists
-    if (data && data.length > 0 && !currentConversationId) {
-      setCurrentConversationId(data[0].id);
-    }
-  };
-
-  const loadMessages = async (conversationId: string) => {
-    const { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("conversation_id", conversationId)
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Error loading messages:", error);
-      return;
-    }
-
-    setMessages(
-      (data || []).map((m) => ({
-        id: m.id,
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      }))
-    );
-  };
-
-  const createConversation = async (title: string): Promise<string | null> => {
-    if (!user) return null;
-
-    const { data, error } = await supabase
-      .from("conversations")
-      .insert({ user_id: user.id, title })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating conversation:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível criar a conversa.",
-        variant: "destructive",
-      });
-      return null;
-    }
-
-    setConversations((prev) => [data, ...prev]);
-    return data.id;
-  };
-
-  const saveMessage = async (conversationId: string, role: "user" | "assistant", content: string) => {
-    const { error } = await supabase
-      .from("messages")
-      .insert({ conversation_id: conversationId, role, content });
-
-    if (error) {
-      console.error("Error saving message:", error);
-    }
+  const createConversation = (title: string): string => {
+    const newConversation: Conversation = {
+      id: crypto.randomUUID(),
+      title,
+      created_at: new Date().toISOString(),
+    };
+    setConversations((prev) => [newConversation, ...prev]);
+    return newConversation.id;
   };
 
   const handleNewConversation = () => {
@@ -157,36 +51,27 @@ const Chat = () => {
     setMessages([]);
   };
 
-  const handleDeleteConversation = async (id: string) => {
-    const { error } = await supabase.from("conversations").delete().eq("id", id);
-
-    if (error) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível excluir a conversa.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleDeleteConversation = (id: string) => {
     setConversations((prev) => prev.filter((c) => c.id !== id));
-    
     if (currentConversationId === id) {
       setCurrentConversationId(null);
       setMessages([]);
     }
   };
 
-  const sendMessage = async (content: string) => {
-    if (!user || !session) return;
+  const handleSelectConversation = (id: string) => {
+    setCurrentConversationId(id);
+    // In simplified mode, messages are not persisted
+    setMessages([]);
+  };
 
+  const sendMessage = async (content: string) => {
     let conversationId = currentConversationId;
 
     // Create conversation if needed
     if (!conversationId) {
       const title = content.length > 50 ? content.substring(0, 50) + "..." : content;
-      conversationId = await createConversation(title);
-      if (!conversationId) return;
+      conversationId = createConversation(title);
       setCurrentConversationId(conversationId);
     }
 
@@ -197,7 +82,6 @@ const Chat = () => {
       content,
     };
     setMessages((prev) => [...prev, userMessage]);
-    await saveMessage(conversationId, "user", content);
 
     // Stream assistant response
     setIsLoading(true);
@@ -276,17 +160,6 @@ const Chat = () => {
           }
         }
       }
-
-      // Save assistant message
-      if (assistantContent) {
-        await saveMessage(conversationId, "assistant", assistantContent);
-        
-        // Update conversation timestamp
-        await supabase
-          .from("conversations")
-          .update({ updated_at: new Date().toISOString() })
-          .eq("id", conversationId);
-      }
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -299,28 +172,20 @@ const Chat = () => {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Carregando...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex bg-background">
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
         currentConversationId={currentConversationId}
-        onSelectConversation={setCurrentConversationId}
+        onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
         onDeleteConversation={handleDeleteConversation}
       />
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col">
-        <ChatHeader userEmail={user.email} />
+        <ChatHeader />
 
         {/* Messages area */}
         <ScrollArea className="flex-1" ref={scrollRef}>
