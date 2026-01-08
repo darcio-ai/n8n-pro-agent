@@ -10,7 +10,7 @@ const CTASection = () => {
       <div className="max-w-4xl mx-auto">
         <div className="relative rounded-2xl overflow-hidden">
           {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-n8n-coral-glow to-primary opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-orbitha-cyan via-orbitha-purple to-orbitha-cyan opacity-90" />
           
           {/* Grid pattern overlay */}
           <div className="absolute inset-0 n8n-grid-bg opacity-10" />
