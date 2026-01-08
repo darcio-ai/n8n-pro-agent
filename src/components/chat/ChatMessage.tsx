@@ -1,12 +1,7 @@
-import { Bot, User, Copy, Check } from "lucide-react";
+import { Bot, User, Copy, Check, FileText, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
+import { Message, Attachment } from "@/types/chat";
 
 interface ChatMessageProps {
   message: Message;
@@ -315,6 +310,48 @@ const parseMarkdown = (content: string) => {
   return elements;
 };
 
+const MessageAttachments = ({ attachments, isUser }: { attachments: Attachment[]; isUser: boolean }) => {
+  if (!attachments || attachments.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {attachments.map((attachment) => (
+        <div key={attachment.id}>
+          {attachment.type === "image" ? (
+            <a
+              href={attachment.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <img
+                src={attachment.url}
+                alt={attachment.name}
+                className="max-w-[200px] max-h-[200px] rounded-lg object-cover border border-border/50 hover:opacity-90 transition-opacity"
+              />
+            </a>
+          ) : (
+            <a
+              href={attachment.url}
+              download={attachment.name}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                isUser
+                  ? "bg-white/20 hover:bg-white/30"
+                  : "bg-muted hover:bg-muted/80"
+              )}
+            >
+              <FileText className="w-4 h-4" />
+              <span className="truncate max-w-[150px]">{attachment.name}</span>
+              <ExternalLink className="w-3 h-3 opacity-60" />
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const ChatMessage = ({ message }: ChatMessageProps) => {
   const isUser = message.role === "user";
 
@@ -350,9 +387,14 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
             : "bg-card border border-border text-card-foreground"
         )}
       >
+        {/* Attachments */}
+        {message.attachments && message.attachments.length > 0 && (
+          <MessageAttachments attachments={message.attachments} isUser={isUser} />
+        )}
+        
         <div className="prose prose-sm dark:prose-invert max-w-none">
           {isUser ? (
-            <p className="mb-0 text-sm">{message.content}</p>
+            message.content ? <p className="mb-0 text-sm">{message.content}</p> : null
           ) : (
             parseMarkdown(message.content)
           )}
