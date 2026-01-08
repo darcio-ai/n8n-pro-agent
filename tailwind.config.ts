@@ -66,6 +66,8 @@ export default {
         },
         // n8n colors kept for compatibility
         n8n: {
+          coral: "hsl(var(--n8n-coral))",
+          "coral-glow": "hsl(var(--n8n-coral-glow))",
           green: "hsl(var(--n8n-green))",
           "green-glow": "hsl(var(--n8n-green-glow))",
           blue: "hsl(var(--n8n-blue))",

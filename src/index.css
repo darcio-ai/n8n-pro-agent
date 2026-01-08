@@ -50,6 +50,8 @@
     --orbitha-purple-glow: 262 83% 68%;
     
     /* n8n colors kept for compatibility */
+    --n8n-coral: 6 100% 68%;
+    --n8n-coral-glow: 6 100% 75%;
     --n8n-green: 145 100% 39%;
     --n8n-green-glow: 145 100% 50%;
     --n8n-blue: 217 91% 60%;
@@ -116,6 +118,8 @@
     --orbitha-purple-glow: 262 83% 75%;
     
     /* n8n colors kept for compatibility */
+    --n8n-coral: 6 100% 68%;
+    --n8n-coral-glow: 6 100% 75%;
     --n8n-green: 145 100% 45%;
     --n8n-green-glow: 145 100% 55%;
     --n8n-blue: 217 91% 65%;
@@ -196,14 +200,14 @@
     background-image: linear-gradient(135deg, hsl(var(--orbitha-cyan)), hsl(var(--orbitha-purple)));
   }
 
-  /* Primary gradient button - Orbitha style */
+  /* Primary gradient button - n8n coral style for CTAs */
   .btn-gradient {
     @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(var(--orbitha-cyan)), hsl(var(--orbitha-purple)));
+    background: linear-gradient(135deg, hsl(var(--n8n-coral)), hsl(var(--n8n-coral-glow)));
   }
 
   .btn-gradient:hover {
-    box-shadow: 0 0 30px hsl(var(--orbitha-cyan) / 0.4);
+    box-shadow: 0 0 30px hsl(var(--n8n-coral) / 0.4);
   }
 
   /* Glow effects */
