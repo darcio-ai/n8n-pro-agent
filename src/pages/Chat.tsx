@@ -6,18 +6,7 @@ import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import { Bot, Zap, Plug, CreditCard, Repeat, Settings } from "lucide-react";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface Conversation {
-  id: string;
-  title: string;
-  created_at: string;
-}
+import { Message, Conversation, Attachment } from "@/types/chat";
 
 interface QuickCategory {
   icon: React.ReactNode;
@@ -119,12 +108,12 @@ const Chat = () => {
     setMessages([]);
   };
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = async (content: string, attachments?: Attachment[]) => {
     let conversationId = currentConversationId;
 
     if (!conversationId) {
       const title = content.length > 50 ? content.substring(0, 50) + "..." : content;
-      conversationId = createConversation(title);
+      conversationId = createConversation(title || "Nova conversa");
       setCurrentConversationId(conversationId);
     }
 
@@ -132,11 +121,58 @@ const Chat = () => {
       id: `user-${Date.now()}`,
       role: "user",
       content,
+      attachments,
     };
     setMessages((prev) => [...prev, userMessage]);
 
     setIsLoading(true);
     let assistantContent = "";
+
+    // Build multimodal message content for the API
+    const buildMessageContent = (msg: Message) => {
+      if (msg.attachments && msg.attachments.length > 0) {
+        const parts: any[] = [];
+        
+        // Add text if present
+        if (msg.content) {
+          parts.push({ type: "text", text: msg.content });
+        }
+        
+        // Add images
+        msg.attachments
+          .filter((a) => a.type === "image")
+          .forEach((a) => {
+            parts.push({
+              type: "image_url",
+              image_url: { url: a.url },
+            });
+          });
+        
+        // Add file contents as text (for text-based files)
+        msg.attachments
+          .filter((a) => a.type === "file")
+          .forEach((a) => {
+            // Extract base64 content and decode if it's text
+            if (a.mimeType.startsWith("text/") || a.mimeType === "application/json") {
+              try {
+                const base64Content = a.url.split(",")[1];
+                const decodedContent = atob(base64Content);
+                parts.push({
+                  type: "text",
+                  text: `[Arquivo: ${a.name}]\n${decodedContent}`,
+                });
+              } catch {
+                parts.push({ type: "text", text: `[Arquivo anexado: ${a.name}]` });
+              }
+            } else {
+              parts.push({ type: "text", text: `[Arquivo anexado: ${a.name}]` });
+            }
+          });
+        
+        return parts.length === 1 && parts[0].type === "text" ? parts[0].text : parts;
+      }
+      return msg.content;
+    };
 
     try {
       const response = await fetch(CHAT_URL, {
@@ -148,7 +184,7 @@ const Chat = () => {
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({
             role: m.role,
-            content: m.content,
+            content: buildMessageContent(m),
           })),
         }),
       });
