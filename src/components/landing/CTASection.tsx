@@ -24,9 +24,8 @@ const CTASection = () => {
             </p>
             <Button
               size="lg"
-              variant="secondary"
               onClick={() => navigate("/chat")}
-              className="text-lg px-8 py-6 rounded-xl font-semibold shadow-lg hover:scale-105 transition-transform bg-background text-foreground hover:bg-background/90"
+              className="btn-gradient text-lg px-8 py-6 rounded-xl font-semibold shadow-lg hover:scale-105 transition-transform text-white"
             >
               Iniciar Conversa
               <ArrowRight className="w-5 h-5 ml-2" />
