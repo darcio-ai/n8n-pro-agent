@@ -1,7 +1,7 @@
-import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
+import orbithaLogo from "@/assets/orbitha-logo.jpeg";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -11,11 +11,13 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center">
-            <Zap className="w-5 h-5 text-primary-foreground" />
-          </div>
+          <img 
+            src={orbithaLogo} 
+            alt="Orbitha" 
+            className="w-9 h-9 rounded-lg object-cover" 
+          />
           <span className="font-bold text-lg text-foreground hidden sm:inline">
-            N8N Expert
+            N8N Expert Agent <span className="font-normal text-muted-foreground">by Orbitha</span>
           </span>
         </div>
 
@@ -23,15 +25,8 @@ const Header = () => {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <Button
-            onClick={() => navigate("/auth")}
-            variant="outline"
-            className="rounded-lg"
-          >
-            Entrar
-          </Button>
-          <Button
             onClick={() => navigate("/chat")}
-            className="btn-gradient rounded-lg hidden sm:flex"
+            className="btn-gradient rounded-lg"
           >
             Começar
           </Button>
