@@ -191,20 +191,70 @@ Mencione documentação relevante ou recursos adicionais quando aplicável.
 7. **Esclarecimentos:** Se a pergunta for vaga, faça perguntas antes de responder
 8. **Atualizações:** Mantenha-se informado sobre últimas versões do n8n`;
 
+const stylePrompts: Record<string, string> = {
+  normal: "",
+  learning: `
+
+## 📚 MODO APRENDIZADO ATIVO
+- Explique cada conceito passo a passo, como se fosse um professor
+- Use analogias do dia a dia para facilitar a compreensão
+- Inclua uma seção "🤔 Por que isso importa?" em cada explicação
+- Adicione "💡 Dica de Mestre" com insights práticos
+- Ao final, faça 1-2 perguntas de reflexão para fixar o aprendizado
+- Use exemplos progressivos: simples → intermediário → avançado
+- Destaque os erros comuns e como evitá-los`,
+
+  concise: `
+
+## ⚡ MODO CONCISO
+- Seja extremamente direto e objetivo
+- Máximo 3-4 parágrafos por resposta
+- Use bullet points em vez de parágrafos longos
+- Código primeiro, explicação mínima depois
+- Evite repetições e contexto desnecessário
+- Formato preferido: Problema → Solução → Código
+- Se precisar de mais detalhes, o usuário pedirá`,
+
+  explanatory: `
+
+## 🔬 MODO EXPLICATIVO COMPLETO
+- Forneça contexto histórico e técnico completo
+- Explique o "porquê" profundo além do "como"
+- Compare com alternativas e explique trade-offs
+- Inclua diagramas em texto quando possível (ASCII/Mermaid)
+- Mencione edge cases e situações especiais
+- Adicione seção "📖 Para saber mais" com recursos
+- Explique as implicações de cada decisão técnica`,
+
+  formal: `
+
+## 👔 MODO FORMAL/TÉCNICO
+- Use tom profissional e linguagem técnica precisa
+- Estruture como documentação técnica oficial
+- Evite gírias, emojis e linguagem casual
+- Use terminologia técnica correta sem simplificações
+- Formato: Objetivo → Pré-requisitos → Procedimento → Validação
+- Inclua considerações de segurança e compliance
+- Referencie padrões da indústria quando aplicável`,
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, responseStyle = "normal" } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Processing chat request with", messages.length, "messages");
+    console.log("Processing chat request with", messages.length, "messages, style:", responseStyle);
+
+    const styleModifier = stylePrompts[responseStyle] || "";
+    const fullSystemPrompt = systemPrompt + styleModifier;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -215,7 +265,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: fullSystemPrompt },
           ...messages,
         ],
         stream: true,

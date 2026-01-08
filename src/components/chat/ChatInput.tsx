@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Paperclip, X } from "lucide-react";
+import { Send, Loader2, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import AttachmentPreview from "./AttachmentPreview";
+import { ResponseStyleSelector, ResponseStyle } from "./ResponseStyleSelector";
 import {
   Attachment,
   ALLOWED_IMAGE_TYPES,
@@ -15,9 +16,11 @@ import {
 interface ChatInputProps {
   onSend: (message: string, attachments?: Attachment[]) => void;
   isLoading: boolean;
+  responseStyle: ResponseStyle;
+  onStyleChange: (style: ResponseStyle) => void;
 }
 
-const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
+const ChatInput = ({ onSend, isLoading, responseStyle, onStyleChange }: ChatInputProps) => {
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -250,9 +253,14 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
           )}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground mt-2 text-center">
-        Enter para enviar • Shift+Enter nova linha • Ctrl+V colar imagem • Arraste arquivos
-      </p>
+      
+      {/* Bottom bar with style selector */}
+      <div className="flex items-center justify-between mt-2">
+        <ResponseStyleSelector value={responseStyle} onChange={onStyleChange} />
+        <p className="text-xs text-muted-foreground">
+          Enter para enviar • Shift+Enter nova linha
+        </p>
+      </div>
     </form>
   );
 };
