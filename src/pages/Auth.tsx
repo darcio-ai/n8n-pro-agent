@@ -10,8 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import orbithaLogo from "@/assets/orbitha-logo.jpeg";
 
-const emailSchema = z.string().email("Email inválido");
-const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres");
+const emailSchema = z.string().email("Email inválido").max(255, "Email muito longo");
+const passwordSchema = z.string()
+  .min(8, "Senha deve ter pelo menos 8 caracteres")
+  .max(128, "Senha muito longa")
+  .regex(/[A-Z]/, "Senha deve ter pelo menos uma letra maiúscula")
+  .regex(/[a-z]/, "Senha deve ter pelo menos uma letra minúscula")
+  .regex(/[0-9]/, "Senha deve ter pelo menos um número");
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
