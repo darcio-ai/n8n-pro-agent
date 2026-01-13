@@ -213,6 +213,30 @@ const Chat = () => {
     }
   };
 
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) throw error;
+
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      toast({
+        title: "Mensagem excluída",
+        description: "A mensagem foi removida com sucesso.",
+      });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a mensagem.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSelectConversation = async (id: string) => {
     setCurrentConversationId(id);
     await loadMessages(id);
@@ -508,7 +532,7 @@ const Chat = () => {
             ) : (
               <div className="space-y-2">
                 {messages.map((message) => (
-                  <ChatMessage key={message.id} message={message} />
+                  <ChatMessage key={message.id} message={message} onDelete={handleDeleteMessage} />
                 ))}
                 {isLoading && messages[messages.length - 1]?.role === "user" && (
                   <div className="flex gap-3 p-4">
