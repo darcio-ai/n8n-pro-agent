@@ -1,4 +1,4 @@
-import { Bot, User, Copy, Check, FileText, ExternalLink } from "lucide-react";
+import { Bot, User, Copy, Check, FileText, ExternalLink, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Message, Attachment } from "@/types/chat";
@@ -7,6 +7,7 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatMessageProps {
   message: Message;
+  onDelete?: (messageId: string) => void;
 }
 
 const languageMap: Record<string, string> = {
@@ -33,7 +34,7 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   const customStyle: React.CSSProperties = {
     margin: 0,
     padding: '16px',
-    fontSize: '14px',
+    fontSize: '15px',
     lineHeight: '1.5',
     borderRadius: '0 0 8px 8px',
     fontFamily: '"Fira Code", "JetBrains Mono", Consolas, monospace',
@@ -380,13 +381,13 @@ const MessageAttachments = ({ attachments, isUser }: { attachments: Attachment[]
   );
 };
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
+const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
   const isUser = message.role === "user";
 
   return (
     <div
       className={cn(
-        "flex gap-3 p-4 animate-fade-in-up",
+        "flex gap-3 p-4 animate-fade-in-up group/message",
         isUser ? "flex-row-reverse" : "flex-row"
       )}
     >
@@ -407,26 +408,44 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       </div>
 
       {/* Message content */}
-      <div
-        className={cn(
-          "flex-1 max-w-[80%] rounded-xl p-4",
-          isUser
-            ? "bg-gradient-to-br from-primary to-n8n-coral-glow text-primary-foreground ml-auto"
-            : "bg-white dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100"
-        )}
-      >
-        {/* Attachments */}
-        {message.attachments && message.attachments.length > 0 && (
-          <MessageAttachments attachments={message.attachments} isUser={isUser} />
-        )}
-        
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-          {isUser ? (
-            message.content ? <p className="mb-0 text-sm">{message.content}</p> : null
-          ) : (
-            parseMarkdown(message.content)
+      <div className="flex-1 max-w-[80%] relative">
+        <div
+          className={cn(
+            "rounded-xl p-4",
+            isUser
+              ? "bg-gradient-to-br from-primary to-n8n-coral-glow text-primary-foreground ml-auto"
+              : "bg-white dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100"
           )}
+        >
+          {/* Attachments */}
+          {message.attachments && message.attachments.length > 0 && (
+            <MessageAttachments attachments={message.attachments} isUser={isUser} />
+          )}
+          
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            {isUser ? (
+              message.content ? <p className="mb-0 text-sm">{message.content}</p> : null
+            ) : (
+              parseMarkdown(message.content)
+            )}
+          </div>
         </div>
+        
+        {/* Delete button */}
+        {onDelete && (
+          <button
+            onClick={() => onDelete(message.id)}
+            className={cn(
+              "absolute top-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
+              "p-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-red-100 dark:hover:bg-red-900/30",
+              "text-zinc-400 hover:text-red-500 dark:hover:text-red-400",
+              isUser ? "left-2" : "right-2"
+            )}
+            title="Excluir mensagem"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );
