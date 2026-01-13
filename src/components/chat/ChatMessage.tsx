@@ -324,6 +324,17 @@ const parseMarkdown = (content: string) => {
 
   flushList();
 
+  // Flush unclosed code block (handles streaming or incomplete responses)
+  if (currentCodeBlock) {
+    elements.push(
+      <CodeBlock
+        key={`code-${elements.length}`}
+        code={currentCodeBlock.code.join("\n")}
+        language={currentCodeBlock.language}
+      />
+    );
+  }
+
   return elements;
 };
 
