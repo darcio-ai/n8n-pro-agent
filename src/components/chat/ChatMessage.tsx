@@ -37,22 +37,22 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
     lineHeight: '1.5',
     borderRadius: '0 0 8px 8px',
     fontFamily: '"Fira Code", "JetBrains Mono", Consolas, monospace',
-    background: '#282c34',
+    background: '#1a1a1a',
   };
 
   return (
-    <div className="my-4 rounded-lg overflow-hidden shadow-md">
+    <div className="my-4 rounded-lg overflow-hidden group">
       {/* Header escuro */}
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#1e1e1e' }}>
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#1a1a1a' }}>
         <span className="text-xs font-mono text-zinc-400">
           {normalizedLanguage}
         </span>
         <button
           onClick={handleCopy}
           className={cn(
-            "flex items-center gap-1.5 text-xs transition-all duration-200",
+            "flex items-center gap-1.5 text-xs transition-all duration-200 opacity-0 group-hover:opacity-100",
             copied 
-              ? "text-green-400" 
+              ? "text-green-400 opacity-100" 
               : "text-zinc-400 hover:text-zinc-200"
           )}
         >
