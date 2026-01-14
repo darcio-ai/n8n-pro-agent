@@ -449,7 +449,7 @@ const Chat = () => {
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-screen bg-background">
+    <ResizablePanelGroup direction="horizontal" className="h-[100dvh] bg-background">
       <ResizablePanel defaultSize={20} minSize={10} maxSize={40}>
         <ChatSidebar
           conversations={conversations}
@@ -462,8 +462,8 @@ const Chat = () => {
 
       <ResizableHandle withHandle />
 
-      <ResizablePanel defaultSize={80}>
-        <div className="flex flex-col h-full overflow-hidden">
+      <ResizablePanel defaultSize={80} className="min-h-0">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden">
           <ChatHeader />
 
           <ScrollArea className="flex-1 min-h-0" ref={scrollRef}>

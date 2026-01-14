@@ -73,7 +73,7 @@ const ChatSidebar = ({
             <div
               key={conversation.id}
               className={cn(
-                "group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors",
+                "group relative flex items-center gap-2 pl-3 pr-10 py-2 rounded-lg cursor-pointer transition-colors",
                 currentConversationId === conversation.id
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50"
@@ -87,7 +87,7 @@ const ChatSidebar = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 flex-shrink-0 text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDeleteConversation(conversation.id);
