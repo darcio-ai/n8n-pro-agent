@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Plus, MessageSquare, MoreHorizontal, Star, Pencil, FolderPlus, Trash2, PanelLeftClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,9 +41,9 @@ const ChatSidebar = ({
   const navigate = useNavigate();
 
   return (
-    <div className="h-full w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+    <div className="h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Header */}
-      <div className="p-3 border-b border-sidebar-border flex items-center justify-between">
+      <div className="flex-shrink-0 p-3 border-b border-sidebar-border flex items-center justify-between">
         <span className="font-semibold text-sidebar-foreground">Conversas</span>
         <Button
           variant="ghost"
@@ -57,7 +56,7 @@ const ChatSidebar = ({
       </div>
 
       {/* New conversation button */}
-      <div className="p-3">
+      <div className="flex-shrink-0 p-3">
         <Button
           onClick={onNewConversation}
           className="btn-gradient w-full justify-center"
@@ -67,9 +66,9 @@ const ChatSidebar = ({
         </Button>
       </div>
 
-      {/* Conversations list */}
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-1 pb-3 overflow-x-hidden">
+      {/* Conversations list - scrollable area */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 conversations-list">
+        <div className="space-y-1 pb-3">
           {conversations.map((conversation) => (
             <div
               key={conversation.id}
@@ -149,7 +148,7 @@ const ChatSidebar = ({
             </div>
           ))}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Back to home */}
       <div className="p-3 border-t border-sidebar-border">
