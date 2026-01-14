@@ -487,3 +487,25 @@ div[style*="Edit with Lovable"],
 :root .conversations-list::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
+
+/* Force transparent background on assistant messages */
+[data-message-type="assistant"],
+.assistant-message,
+.message-assistant {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.assistant-message > *:not(pre):not(code):not(.code-block) {
+  background: transparent !important;
+}
+
+/* Ensure chat message containers are transparent for assistant */
+.chat-message-assistant {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.chat-message-assistant > div {
+  background: transparent !important;
+}
