@@ -18,12 +18,95 @@ const languageMap: Record<string, string> = {
   shell: 'bash',
   yml: 'yaml',
   md: 'markdown',
+  zsh: 'bash',
+  console: 'bash',
+  terminal: 'bash',
+};
+
+// Auto-detect language from code content
+const detectLanguage = (code: string): string => {
+  const trimmed = code.trim();
+  
+  // JSON detection
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || 
+      (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    try {
+      JSON.parse(trimmed);
+      return 'json';
+    } catch {
+      // Not valid JSON, continue detection
+    }
+  }
+  
+  // Bash/Shell detection
+  const bashPatterns = [
+    /^(curl|wget|npm|yarn|pnpm|bun|cd|ls|mkdir|rm|cp|mv|cat|echo|export|source|chmod|chown|sudo|apt|brew|pip|git|docker|kubectl)\s/m,
+    /^\$\s/m,
+    /^#!\s*\/bin\/(bash|sh|zsh)/,
+    /\|\s*(grep|awk|sed|xargs|head|tail|sort|uniq)/,
+  ];
+  if (bashPatterns.some(pattern => pattern.test(trimmed))) {
+    return 'bash';
+  }
+  
+  // JavaScript/TypeScript detection
+  const jsPatterns = [
+    /\b(const|let|var|function|async|await|import|export|class|extends|interface|type)\b/,
+    /=>\s*{/,
+    /\.(then|catch|finally)\(/,
+    /console\.(log|error|warn)/,
+  ];
+  if (jsPatterns.some(pattern => pattern.test(trimmed))) {
+    // Check if TypeScript
+    if (/\b(interface|type|:\s*(string|number|boolean|any|void|never))\b/.test(trimmed)) {
+      return 'typescript';
+    }
+    return 'javascript';
+  }
+  
+  // Python detection
+  const pythonPatterns = [
+    /^(def|class|import|from|if __name__|print\(|async def)\s/m,
+    /:\s*$/m,
+    /\bself\./,
+  ];
+  if (pythonPatterns.some(pattern => pattern.test(trimmed))) {
+    return 'python';
+  }
+  
+  // SQL detection
+  const sqlPatterns = [
+    /\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|FROM|WHERE|JOIN|TABLE|INDEX)\b/i,
+  ];
+  if (sqlPatterns.some(pattern => pattern.test(trimmed))) {
+    return 'sql';
+  }
+  
+  // HTML detection
+  if (/<[a-z][\s\S]*>/i.test(trimmed) && /<\/[a-z]+>/i.test(trimmed)) {
+    return 'html';
+  }
+  
+  // CSS detection
+  if (/[.#][\w-]+\s*{[\s\S]*}/.test(trimmed) || /@(media|keyframes|import)/.test(trimmed)) {
+    return 'css';
+  }
+  
+  // YAML detection
+  if (/^[\w-]+:\s*.+$/m.test(trimmed) && !trimmed.includes('{')) {
+    return 'yaml';
+  }
+  
+  return 'text';
 };
 
 const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   const [copied, setCopied] = useState(false);
   
-  const normalizedLanguage = languageMap[language || ''] || language || 'text';
+  // Use provided language, map it, or auto-detect
+  const detectedLanguage = language 
+    ? (languageMap[language.toLowerCase()] || language.toLowerCase())
+    : detectLanguage(code);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -38,18 +121,19 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
     lineHeight: '20px',
     borderRadius: '0 0 8px 8px',
     fontFamily: 'Monaco, Menlo, Consolas, monospace',
-    background: '#1a1a1a',
+    background: '#0a0a0a',
   };
 
   return (
-    <div className="my-4 rounded-lg overflow-hidden group" style={{ 
+    <div className="my-4 rounded-lg overflow-hidden code-block" style={{ 
       border: '1px solid rgba(255, 255, 255, 0.1)',
-      backgroundColor: '#1a1a1a'
+      backgroundColor: '#0a0a0a',
+      position: 'relative'
     }}>
       {/* Header escuro */}
       <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#0f0f0f' }}>
         <span className="text-xs font-mono" style={{ color: '#9ca3af' }}>
-          {normalizedLanguage}
+          {detectedLanguage}
         </span>
         <button
           onClick={handleCopy}
@@ -59,6 +143,7 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
               ? "text-green-400" 
               : "text-zinc-400 hover:text-zinc-200"
           )}
+          title={copied ? "Copiado!" : "Copiar código"}
         >
           {copied ? (
             <>
@@ -75,11 +160,11 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
       </div>
       {/* Código com syntax highlighting */}
       <SyntaxHighlighter
-        language={normalizedLanguage}
+        language={detectedLanguage}
         style={atomDark}
         customStyle={customStyle}
         showLineNumbers={false}
-        wrapLongLines={false}
+        wrapLongLines={true}
       >
         {code}
       </SyntaxHighlighter>
