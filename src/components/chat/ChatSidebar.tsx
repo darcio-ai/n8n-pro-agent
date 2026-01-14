@@ -92,7 +92,7 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="opacity-0 group-hover:opacity-100 h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="opacity-0 group-hover:opacity-100 h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDeleteConversation(conversation.id);
