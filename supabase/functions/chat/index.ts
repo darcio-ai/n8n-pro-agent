@@ -304,7 +304,7 @@ serve(async (req) => {
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream; charset=utf-8" },
     });
   } catch (error) {
     console.error("Chat error:", error);
