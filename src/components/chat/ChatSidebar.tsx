@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Plus, MessageSquare, MoreHorizontal, Star, Pencil, FolderPlus, Trash2 } from "lucide-react";
+import { Plus, MessageSquare, MoreHorizontal, Star, Pencil, FolderPlus, Trash2, PanelLeftClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -25,6 +25,7 @@ interface ChatSidebarProps {
   onRenameConversation?: (id: string) => void;
   onToggleFavorite?: (id: string) => void;
   onAddToProject?: (id: string) => void;
+  onToggleSidebar?: () => void;
 }
 
 const ChatSidebar = ({
@@ -36,14 +37,23 @@ const ChatSidebar = ({
   onRenameConversation,
   onToggleFavorite,
   onAddToProject,
+  onToggleSidebar,
 }: ChatSidebarProps) => {
   const navigate = useNavigate();
 
   return (
     <div className="h-full w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Header */}
-      <div className="p-3 border-b border-sidebar-border">
+      <div className="p-3 border-b border-sidebar-border flex items-center justify-between">
         <span className="font-semibold text-sidebar-foreground">Conversas</span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-sidebar-foreground hover:bg-sidebar-accent"
+          onClick={onToggleSidebar}
+        >
+          <PanelLeftClose className="w-4 h-4" />
+        </Button>
       </div>
 
       {/* New conversation button */}
@@ -79,7 +89,7 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 text-sidebar-foreground group-hover:text-black hover:bg-transparent"
+                    className="h-6 w-6 text-muted-foreground group-hover:text-black hover:bg-transparent"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="w-4 h-4" />
