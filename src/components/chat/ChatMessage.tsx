@@ -42,18 +42,21 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   };
 
   return (
-    <div className="my-4 rounded-lg overflow-hidden group">
+    <div className="my-4 rounded-lg overflow-hidden group" style={{ 
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      backgroundColor: '#1a1a1a'
+    }}>
       {/* Header escuro */}
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#1a1a1a' }}>
-        <span className="text-xs font-mono text-zinc-400">
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: '#0f0f0f' }}>
+        <span className="text-xs font-mono" style={{ color: '#9ca3af' }}>
           {normalizedLanguage}
         </span>
         <button
           onClick={handleCopy}
           className={cn(
-            "flex items-center gap-1.5 text-xs transition-all duration-200 opacity-0 group-hover:opacity-100",
+            "flex items-center gap-1.5 text-xs transition-all duration-200",
             copied 
-              ? "text-green-400 opacity-100" 
+              ? "text-green-400" 
               : "text-zinc-400 hover:text-zinc-200"
           )}
         >
@@ -96,12 +99,19 @@ const parseMarkdown = (content: string) => {
         <ListTag
           key={`list-${elements.length}`}
           className={cn(
-            "my-2 space-y-1.5",
+            "my-2",
             listItems.type === "ol" ? "list-decimal ml-6" : "list-disc ml-5"
           )}
+          style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
         >
           {listItems.items.map((item, i) => (
-            <li key={i} className="text-chat text-zinc-700 dark:text-zinc-300">
+            <li key={i} style={{ 
+              fontSize: '15px', 
+              lineHeight: '24px', 
+              fontWeight: 400, 
+              color: '#e5e5e5' 
+            }}>
+              <span style={{ fontWeight: 600, color: '#ffffff' }}></span>
               {parseInline(item)}
             </li>
           ))}
@@ -129,7 +139,14 @@ const parseMarkdown = (content: string) => {
         return (
           <code 
             key={i} 
-            className="px-1.5 py-0.5 rounded text-xs font-mono bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
+            className="font-mono"
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontSize: '13px',
+              color: '#f87171'
+            }}
           >
             {part.slice(1, -1)}
           </code>
@@ -203,7 +220,12 @@ const parseMarkdown = (content: string) => {
       flushList();
       const headerText = line.slice(4);
       elements.push(
-        <h3 key={`h3-${i}`} className="text-base font-semibold mt-5 mb-2 text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+        <h3 key={`h3-${i}`} className="text-base flex items-center gap-2" style={{ 
+          fontWeight: 600, 
+          color: '#ffffff', 
+          marginTop: '20px',
+          marginBottom: '16px' 
+        }}>
           {headerText}
         </h3>
       );
@@ -214,7 +236,12 @@ const parseMarkdown = (content: string) => {
       flushList();
       const headerText = line.slice(3);
       elements.push(
-        <h2 key={`h2-${i}`} className="text-lg font-semibold mt-5 mb-2 text-zinc-900 dark:text-zinc-100">
+        <h2 key={`h2-${i}`} className="text-lg" style={{ 
+          fontWeight: 600, 
+          color: '#ffffff', 
+          marginTop: '20px',
+          marginBottom: '16px' 
+        }}>
           {headerText}
         </h2>
       );
@@ -317,7 +344,13 @@ const parseMarkdown = (content: string) => {
     // Regular paragraph
     flushList();
     elements.push(
-      <p key={`p-${i}`} className="mb-2 text-chat leading-relaxed text-zinc-700 dark:text-zinc-300">
+      <p key={`p-${i}`} style={{ 
+        fontSize: '15px', 
+        fontWeight: 400, 
+        lineHeight: '24px', 
+        color: '#e5e5e5',
+        marginBottom: '8px'
+      }}>
         {parseInline(line)}
       </p>
     );
@@ -409,27 +442,29 @@ const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
 
       {/* Message content */}
       <div className="flex-1 max-w-[80%] relative">
-        <div
-          className={cn(
-            "rounded-xl p-4",
-            isUser
-              ? "bg-gradient-to-br from-primary to-n8n-coral-glow text-primary-foreground ml-auto"
-              : "bg-white dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100"
-          )}
-        >
-          {/* Attachments */}
-          {message.attachments && message.attachments.length > 0 && (
-            <MessageAttachments attachments={message.attachments} isUser={isUser} />
-          )}
-          
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            {isUser ? (
-              message.content ? <p className="mb-0 text-chat">{message.content}</p> : null
-            ) : (
-              parseMarkdown(message.content)
+        {isUser ? (
+          <div className="rounded-xl p-4 bg-gradient-to-br from-primary to-n8n-coral-glow text-primary-foreground ml-auto">
+            {/* Attachments */}
+            {message.attachments && message.attachments.length > 0 && (
+              <MessageAttachments attachments={message.attachments} isUser={isUser} />
+            )}
+            {message.content && (
+              <p className="mb-0" style={{ fontSize: '15px', fontWeight: 400, lineHeight: '24px' }}>
+                {message.content}
+              </p>
             )}
           </div>
-        </div>
+        ) : (
+          <div>
+            {/* Attachments */}
+            {message.attachments && message.attachments.length > 0 && (
+              <MessageAttachments attachments={message.attachments} isUser={isUser} />
+            )}
+            <div className="max-w-none">
+              {parseMarkdown(message.content)}
+            </div>
+          </div>
+        )}
         
         {/* Delete button */}
         {onDelete && (
