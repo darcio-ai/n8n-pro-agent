@@ -421,8 +421,10 @@ const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
     <div
       className={cn(
         "flex gap-3 p-4 animate-fade-in-up group/message",
-        isUser ? "flex-row-reverse" : "flex-row"
+        isUser ? "flex-row-reverse" : "flex-row chat-message-assistant"
       )}
+      data-message-type={message.role}
+      style={!isUser ? { background: 'transparent', backgroundColor: 'transparent' } : undefined}
     >
       {/* Avatar */}
       <div
@@ -430,18 +432,22 @@ const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
           "flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center",
           isUser
             ? "bg-gradient-to-br from-primary to-n8n-coral-glow"
-            : "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"
+            : "bg-transparent border border-zinc-700"
         )}
+        style={!isUser ? { background: 'transparent' } : undefined}
       >
         {isUser ? (
           <User className="w-5 h-5 text-primary-foreground" />
         ) : (
-          <Bot className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
+          <Bot className="w-5 h-5 text-zinc-400" />
         )}
       </div>
 
       {/* Message content */}
-      <div className="flex-1 max-w-[80%] relative">
+      <div 
+        className={cn("flex-1 max-w-[80%] relative", !isUser && "assistant-message")}
+        style={!isUser ? { background: 'transparent', backgroundColor: 'transparent' } : undefined}
+      >
         {isUser ? (
           <div className="rounded-xl p-4 bg-gradient-to-br from-primary to-n8n-coral-glow text-primary-foreground ml-auto">
             {/* Attachments */}
@@ -455,12 +461,12 @@ const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
             )}
           </div>
         ) : (
-          <div>
+          <div style={{ background: 'transparent', backgroundColor: 'transparent' }}>
             {/* Attachments */}
             {message.attachments && message.attachments.length > 0 && (
               <MessageAttachments attachments={message.attachments} isUser={isUser} />
             )}
-            <div className="max-w-none">
+            <div className="max-w-none" style={{ background: 'transparent' }}>
               {parseMarkdown(message.content)}
             </div>
           </div>
