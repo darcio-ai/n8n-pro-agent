@@ -31,10 +31,7 @@ const ChatSidebar = ({
 
   return (
     <div
-      className={cn(
-        "h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
-      )}
+      className="h-full w-full bg-sidebar border-r border-sidebar-border flex flex-col"
     >
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex items-center justify-between">
@@ -92,7 +89,7 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="opacity-0 group-hover:opacity-100 h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                    className="h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDeleteConversation(conversation.id);
