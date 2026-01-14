@@ -1,8 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, MessageSquare, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, MessageSquare, MoreHorizontal, Star, Pencil, FolderPlus, Trash2, PanelLeft, PanelLeftClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface Conversation {
@@ -17,6 +29,9 @@ interface ChatSidebarProps {
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
+  onRenameConversation?: (id: string) => void;
+  onToggleFavorite?: (id: string) => void;
+  onAddToProject?: (id: string) => void;
 }
 
 const ChatSidebar = ({
@@ -25,6 +40,9 @@ const ChatSidebar = ({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  onRenameConversation,
+  onToggleFavorite,
+  onAddToProject,
 }: ChatSidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
@@ -41,18 +59,26 @@ const ChatSidebar = ({
         {!isCollapsed && (
           <span className="font-semibold text-sidebar-foreground">Conversas</span>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              {isCollapsed ? (
+                <PanelLeft className="w-4 h-4" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{isCollapsed ? "Abrir barra lateral" : "Fechar barra lateral"}</p>
+            <span className="text-xs text-muted-foreground">Ctrl+B</span>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {/* New conversation button */}
@@ -89,17 +115,61 @@ const ChatSidebar = ({
                   <span className="flex-1 truncate text-sm">
                     {conversation.title}
                   </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteConversation(conversation.id);
-                    }}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 text-sidebar-foreground hover:bg-sidebar-accent"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-popover border border-border z-50">
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleFavorite?.(conversation.id);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Star className="w-4 h-4 mr-2" />
+                        Favoritar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRenameConversation?.(conversation.id);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Mudar o nome
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToProject?.(conversation.id);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <FolderPlus className="w-4 h-4 mr-2" />
+                        Adicionar ao projeto
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteConversation(conversation.id);
+                        }}
+                        className="text-red-400 focus:text-red-400 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Apagar
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               )}
             </div>
