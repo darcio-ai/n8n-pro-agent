@@ -191,7 +191,7 @@ const ChatInput = ({ onSend, isLoading, responseStyle, onStyleChange }: ChatInpu
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`relative shrink-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-border bg-card transition-colors ${
+      className={`p-4 border-t border-border bg-card transition-colors ${
         isDragging ? "bg-primary/5 border-primary" : ""
       }`}
     >

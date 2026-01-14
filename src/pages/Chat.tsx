@@ -3,7 +3,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
@@ -449,129 +448,119 @@ const Chat = () => {
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-[100dvh] min-h-0 bg-background">
-      <ResizablePanel defaultSize={20} minSize={15} maxSize={40}>
-        <ChatSidebar
-          conversations={conversations}
-          currentConversationId={currentConversationId}
-          onSelectConversation={handleSelectConversation}
-          onNewConversation={handleNewConversation}
-          onDeleteConversation={handleDeleteConversation}
-        />
-      </ResizablePanel>
+    <div className="h-screen flex bg-background">
+      <ChatSidebar
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onSelectConversation={handleSelectConversation}
+        onNewConversation={handleNewConversation}
+        onDeleteConversation={handleDeleteConversation}
+      />
 
-      <ResizableHandle withHandle />
+      <div className="flex-1 flex flex-col">
+        <ChatHeader />
 
-      <ResizablePanel defaultSize={80} className="min-h-0">
-        <div className="flex flex-col h-full min-h-0 overflow-hidden">
-          <div className="shrink-0">
-            <ChatHeader />
-          </div>
-
-          <ScrollArea className="flex-1 min-h-0" ref={scrollRef}>
-            <div className="max-w-4xl mx-auto py-4">
-              {isLoadingMessages ? (
-                <div className="flex items-center justify-center min-h-[60vh]">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <ScrollArea className="flex-1" ref={scrollRef}>
+          <div className="max-w-4xl mx-auto py-4">
+            {isLoadingMessages ? (
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center mb-6 shadow-lg glow-coral">
+                  <Zap className="w-10 h-10 text-primary-foreground" />
                 </div>
-              ) : messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-n8n-coral-glow flex items-center justify-center mb-6 shadow-lg glow-coral">
-                    <Zap className="w-10 h-10 text-primary-foreground" />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2 text-foreground">
-                    Olá! Sou seu Expert em n8n
-                  </h2>
-                  <p className="text-muted-foreground max-w-md mb-8">
-                    Especialista em workflows, integrações MCP, automações CRM e gateways de pagamento.
-                    Escolha uma categoria ou faça sua pergunta!
-                  </p>
+                <h2 className="text-2xl font-bold mb-2 text-foreground">
+                  Olá! Sou seu Expert em n8n
+                </h2>
+                <p className="text-muted-foreground max-w-md mb-8">
+                  Especialista em workflows, integrações MCP, automações CRM e gateways de pagamento.
+                  Escolha uma categoria ou faça sua pergunta!
+                </p>
 
-                  {/* Quick Categories */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
-                    {quickCategories.map((category) => (
-                      <div
-                        key={category.title}
-                        className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300"
-                      >
-                        <div className="flex items-center gap-3 mb-3">
-                          <div
-                            className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center text-white`}
+                {/* Quick Categories */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
+                  {quickCategories.map((category) => (
+                    <div
+                      key={category.title}
+                      className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div
+                          className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center text-white`}
+                        >
+                          {category.icon}
+                        </div>
+                        <div className="text-left">
+                          <h3 className="font-semibold text-foreground">{category.title}</h3>
+                          <p className="text-xs text-muted-foreground">{category.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {category.suggestions.map((suggestion) => (
+                          <button
+                            key={suggestion}
+                            onClick={() => sendMessage(suggestion)}
+                            className="px-2.5 py-1 rounded-md bg-muted hover:bg-primary/10 text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
                           >
-                            {category.icon}
-                          </div>
-                          <div className="text-left">
-                            <h3 className="font-semibold text-foreground">{category.title}</h3>
-                            <p className="text-xs text-muted-foreground">{category.description}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {category.suggestions.map((suggestion) => (
-                            <button
-                              key={suggestion}
-                              onClick={() => sendMessage(suggestion)}
-                              className="px-2.5 py-1 rounded-md bg-muted hover:bg-primary/10 text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
-                            >
-                              {suggestion}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* General Suggestions */}
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {[
-                      "Como configurar um webhook no n8n?",
-                      "Melhores práticas de error handling",
-                      "Como debugar workflows complexos?",
-                    ].map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        onClick={() => sendMessage(suggestion)}
-                        className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {messages.map((message) => (
-                    <ChatMessage key={message.id} message={message} onDelete={handleDeleteMessage} />
-                  ))}
-                  {isLoading && messages[messages.length - 1]?.role === "user" && (
-                    <div className="flex gap-3 p-4">
-                      <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
-                        <Bot className="w-5 h-5 text-zinc-500 dark:text-zinc-400 animate-pulse" />
-                      </div>
-                      <div className="bg-white dark:bg-zinc-900/50 rounded-xl p-4">
-                        <div className="flex gap-1">
-                          <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                        </div>
+                            {suggestion}
+                          </button>
+                        ))}
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              )}
-            </div>
-          </ScrollArea>
 
-          <div className="shrink-0">
-            <ChatInput 
-              onSend={sendMessage} 
-              isLoading={isLoading} 
-              responseStyle={responseStyle}
-              onStyleChange={handleStyleChange}
-            />
+                {/* General Suggestions */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {[
+                    "Como configurar um webhook no n8n?",
+                    "Melhores práticas de error handling",
+                    "Como debugar workflows complexos?",
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => sendMessage(suggestion)}
+                      className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} onDelete={handleDeleteMessage} />
+                ))}
+                {isLoading && messages[messages.length - 1]?.role === "user" && (
+                  <div className="flex gap-3 p-4">
+                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-zinc-500 dark:text-zinc-400 animate-pulse" />
+                    </div>
+                    <div className="bg-white dark:bg-zinc-900/50 rounded-xl p-4">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </ScrollArea>
+
+        <ChatInput 
+          onSend={sendMessage} 
+          isLoading={isLoading} 
+          responseStyle={responseStyle}
+          onStyleChange={handleStyleChange}
+        />
+      </div>
+    </div>
   );
 };
 
