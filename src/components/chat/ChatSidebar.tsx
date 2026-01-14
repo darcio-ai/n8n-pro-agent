@@ -81,24 +81,20 @@ const ChatSidebar = ({
               onClick={() => onSelectConversation(conversation.id)}
             >
               <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              {!isCollapsed && (
-                <>
-                  <span className="flex-1 truncate text-sm">
-                    {conversation.title}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-red-400 hover:text-red-500 hover:bg-red-500/10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteConversation(conversation.id);
-                    }}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </>
-              )}
+              <span className="flex-1 truncate text-sm min-w-0">
+                {conversation.title}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 flex-shrink-0 text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteConversation(conversation.id);
+                }}
+              >
+                <Trash2 className="w-3 h-3" />
+              </Button>
             </div>
           ))}
         </div>
