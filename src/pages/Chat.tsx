@@ -449,8 +449,8 @@ const Chat = () => {
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-[100dvh] bg-background">
-      <ResizablePanel defaultSize={20} minSize={10} maxSize={40}>
+    <ResizablePanelGroup direction="horizontal" className="h-[100dvh] min-h-0 bg-background">
+      <ResizablePanel defaultSize={20} minSize={15} maxSize={40}>
         <ChatSidebar
           conversations={conversations}
           currentConversationId={currentConversationId}
@@ -464,7 +464,9 @@ const Chat = () => {
 
       <ResizablePanel defaultSize={80} className="min-h-0">
         <div className="flex flex-col h-full min-h-0 overflow-hidden">
-          <ChatHeader />
+          <div className="shrink-0">
+            <ChatHeader />
+          </div>
 
           <ScrollArea className="flex-1 min-h-0" ref={scrollRef}>
             <div className="max-w-4xl mx-auto py-4">
@@ -559,12 +561,14 @@ const Chat = () => {
             </div>
           </ScrollArea>
 
-          <ChatInput 
-            onSend={sendMessage} 
-            isLoading={isLoading} 
-            responseStyle={responseStyle}
-            onStyleChange={handleStyleChange}
-          />
+          <div className="shrink-0">
+            <ChatInput 
+              onSend={sendMessage} 
+              isLoading={isLoading} 
+              responseStyle={responseStyle}
+              onStyleChange={handleStyleChange}
+            />
+          </div>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
