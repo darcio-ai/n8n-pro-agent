@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
@@ -448,17 +449,22 @@ const Chat = () => {
   }
 
   return (
-    <div className="h-screen flex bg-background">
-      <ChatSidebar
-        conversations={conversations}
-        currentConversationId={currentConversationId}
-        onSelectConversation={handleSelectConversation}
-        onNewConversation={handleNewConversation}
-        onDeleteConversation={handleDeleteConversation}
-      />
+    <ResizablePanelGroup direction="horizontal" className="h-screen bg-background">
+      <ResizablePanel defaultSize={20} minSize={10} maxSize={40}>
+        <ChatSidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
+        />
+      </ResizablePanel>
 
-      <div className="flex-1 flex flex-col">
-        <ChatHeader />
+      <ResizableHandle withHandle />
+
+      <ResizablePanel defaultSize={80}>
+        <div className="flex-1 flex flex-col h-full">
+          <ChatHeader />
 
         <ScrollArea className="flex-1" ref={scrollRef}>
           <div className="max-w-4xl mx-auto py-4">
@@ -553,14 +559,15 @@ const Chat = () => {
           </div>
         </ScrollArea>
 
-        <ChatInput 
-          onSend={sendMessage} 
-          isLoading={isLoading} 
-          responseStyle={responseStyle}
-          onStyleChange={handleStyleChange}
-        />
-      </div>
-    </div>
+          <ChatInput 
+            onSend={sendMessage} 
+            isLoading={isLoading} 
+            responseStyle={responseStyle}
+            onStyleChange={handleStyleChange}
+          />
+        </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 
