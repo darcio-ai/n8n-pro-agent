@@ -337,129 +337,307 @@ div[style*="Edit with Lovable"],
   animation-delay: 800ms;
 }
 
-/* Syntax Highlighting - Light Theme */
-.hljs {
-  color: #24292e;
+/* ═══════════════════════════════════════════════════════════════════════════
+   SYNTAX HIGHLIGHTING - GitHub Theme Colors (Exact Specification)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════
+   LIGHT MODE
+   ═══════════════════════════════════════════════ */
+
+/* LIGHT MODE - Code Block Structure */
+.code-block {
+  position: relative;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin: 12px 0 !important;
+  background: #f6f8fa !important;
+  border: 1px solid #d0d7de !important;
 }
 
-.hljs-keyword {
-  color: #d73a49;
+.code-block pre {
+  margin: 0 !important;
+  padding: 16px !important;
+  background: #f6f8fa !important;
+  border-radius: 0 0 8px 8px !important;
+  overflow-x: auto !important;
 }
 
-.hljs-string {
-  color: #032f62;
+.code-block code,
+.code-block pre code {
+  font-family: 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: #1f2328 !important;
+  background: transparent !important;
+  text-shadow: none !important;
 }
 
-.hljs-number {
-  color: #005cc5;
+/* LIGHT MODE - Code Block Header */
+.code-block-header,
+.code-block > div:first-child:not(pre) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px !important;
+  background: #eaeef2 !important;
+  border-bottom: 1px solid #d0d7de !important;
+  font-size: 12px;
+  color: #57606a;
 }
 
-.hljs-function {
-  color: #6f42c1;
+/* LIGHT MODE - JSON */
+.code-block .token.property,
+.code-block span[style*="color:#79c0ff"],
+.code-block .hljs-property,
+.code-block .hljs-attr { 
+  color: #0550ae !important; 
 }
 
-.hljs-title {
-  color: #6f42c1;
+.code-block .token.string,
+.code-block span[style*="color:#a5d6ff"],
+.code-block .hljs-string { 
+  color: #0a3069 !important; 
 }
 
-.hljs-comment {
-  color: #6a737d;
-  font-style: italic;
+.code-block .token.number,
+.code-block span[style*="color:#79c0ff"],
+.code-block .hljs-number { 
+  color: #0550ae !important; 
 }
 
-.hljs-property {
-  color: #22863a;
+.code-block .token.boolean,
+.code-block .hljs-literal { 
+  color: #cf222e !important; 
 }
 
-.hljs-attr {
-  color: #005cc5;
+.code-block .token.null { 
+  color: #953800 !important; 
 }
 
-.hljs-built_in {
-  color: #e36209;
+.code-block .token.punctuation,
+.code-block .token.operator,
+.code-block .hljs-punctuation { 
+  color: #57606a !important; 
 }
 
-.hljs-params {
-  color: #24292e;
+/* LIGHT MODE - Bash/Shell */
+.code-block .token.function,
+.code-block .hljs-function,
+.code-block .hljs-title { 
+  color: #8250df !important; 
 }
 
-.hljs-literal {
-  color: #005cc5;
+.code-block .token.keyword,
+.code-block .token.builtin,
+.code-block .hljs-keyword,
+.code-block .hljs-built_in { 
+  color: #cf222e !important; 
 }
 
-.hljs-selector-tag {
-  color: #22863a;
+.code-block .token.variable,
+.code-block .hljs-variable { 
+  color: #0550ae !important; 
 }
 
-.hljs-selector-class {
-  color: #6f42c1;
+.code-block .token.comment,
+.code-block .hljs-comment { 
+  color: #57606a !important; 
+  font-style: italic !important; 
 }
 
-.hljs-selector-id {
-  color: #005cc5;
+.code-block .token.url,
+.code-block .hljs-link { 
+  color: #0a3069 !important; 
 }
 
-/* Syntax Highlighting - Dark Theme */
-.dark .hljs {
-  color: #e6edf3;
+/* LIGHT MODE - Copy Button */
+.code-block .copy-button,
+.code-block button {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 10 !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #d0d7de !important;
+  color: #57606a !important;
 }
 
-.dark .hljs-keyword {
-  color: #ff7b72;
+.code-block .copy-button:hover,
+.code-block button:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #1f2328 !important;
 }
 
-.dark .hljs-string {
-  color: #a5d6ff;
+/* LIGHT MODE - Inline Code */
+:not(pre) > code,
+code:not([class*="language-"]):not(.code-block code) {
+  background: rgba(175, 184, 193, 0.2) !important;
+  color: #cf222e !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+  font-size: 0.9em !important;
 }
 
-.dark .hljs-number {
-  color: #79c0ff;
+/* ═══════════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════════ */
+
+/* DARK MODE - Code Block Structure */
+.dark .code-block {
+  background: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.dark .hljs-function {
-  color: #d2a8ff;
+.dark .code-block pre {
+  background: #0d1117 !important;
 }
 
-.dark .hljs-title {
-  color: #d2a8ff;
+.dark .code-block code,
+.dark .code-block pre code {
+  color: #e6edf3 !important;
 }
 
-.dark .hljs-comment {
-  color: #8b949e;
-  font-style: italic;
+/* DARK MODE - Code Block Header */
+.dark .code-block-header,
+.dark .code-block > div:first-child:not(pre) {
+  background: #161b22 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #8b949e !important;
 }
 
-.dark .hljs-property {
-  color: #7ee787;
+/* DARK MODE - JSON */
+.dark .code-block .token.property,
+.dark .code-block span[style*="color:#0550ae"],
+.dark .code-block .hljs-property,
+.dark .code-block .hljs-attr { 
+  color: #79c0ff !important; 
 }
 
-.dark .hljs-attr {
-  color: #79c0ff;
+.dark .code-block .token.string,
+.dark .code-block span[style*="color:#0a3069"],
+.dark .code-block .hljs-string { 
+  color: #a5d6ff !important; 
 }
 
-.dark .hljs-built_in {
-  color: #ffa657;
+.dark .code-block .token.number,
+.dark .code-block .hljs-number { 
+  color: #79c0ff !important; 
 }
 
-.dark .hljs-params {
-  color: #e6edf3;
+.dark .code-block .token.boolean,
+.dark .code-block .hljs-literal { 
+  color: #ff7b72 !important; 
 }
 
-.dark .hljs-literal {
-  color: #79c0ff;
+.dark .code-block .token.null { 
+  color: #ffa657 !important; 
 }
 
-.dark .hljs-selector-tag {
-  color: #7ee787;
+.dark .code-block .token.punctuation,
+.dark .code-block .token.operator,
+.dark .code-block .hljs-punctuation { 
+  color: #8b949e !important; 
 }
 
-.dark .hljs-selector-class {
-  color: #d2a8ff;
+/* DARK MODE - Bash/Shell */
+.dark .code-block .token.function,
+.dark .code-block .hljs-function,
+.dark .code-block .hljs-title { 
+  color: #d2a8ff !important; 
 }
 
-.dark .hljs-selector-id {
-  color: #79c0ff;
+.dark .code-block .token.keyword,
+.dark .code-block .token.builtin,
+.dark .code-block .hljs-keyword,
+.dark .code-block .hljs-built_in { 
+  color: #ff7b72 !important; 
 }
+
+.dark .code-block .token.variable,
+.dark .code-block .hljs-variable { 
+  color: #79c0ff !important; 
+}
+
+.dark .code-block .token.comment,
+.dark .code-block .hljs-comment { 
+  color: #8b949e !important; 
+  font-style: italic !important; 
+}
+
+.dark .code-block .token.url,
+.dark .code-block .hljs-link { 
+  color: #a5d6ff !important; 
+}
+
+/* DARK MODE - JavaScript class/constant/tag */
+.dark .code-block .token.class-name,
+.dark .code-block .token.constant { 
+  color: #ffa657 !important; 
+}
+
+.dark .code-block .token.tag,
+.dark .code-block .token.selector,
+.dark .code-block .hljs-selector-tag { 
+  color: #7ee787 !important; 
+}
+
+/* DARK MODE - Copy Button */
+.dark .code-block .copy-button,
+.dark .code-block button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #8b949e !important;
+}
+
+.dark .code-block .copy-button:hover,
+.dark .code-block button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #e6edf3 !important;
+}
+
+/* DARK MODE - Inline Code */
+.dark :not(pre) > code,
+.dark code:not([class*="language-"]):not(.code-block code) {
+  background: rgba(110, 118, 129, 0.4) !important;
+  color: #ff7b72 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   HLJS Classes (highlight.js compatibility)
+   ═══════════════════════════════════════════════ */
+
+/* Light Mode HLJS */
+.hljs { color: #1f2328; }
+.hljs-keyword { color: #cf222e !important; }
+.hljs-string { color: #0a3069 !important; }
+.hljs-number { color: #0550ae !important; }
+.hljs-function, .hljs-title { color: #8250df !important; }
+.hljs-comment { color: #57606a !important; font-style: italic !important; }
+.hljs-property, .hljs-attr { color: #0550ae !important; }
+.hljs-built_in { color: #953800 !important; }
+.hljs-literal { color: #cf222e !important; }
+
+/* Dark Mode HLJS */
+.dark .hljs { color: #e6edf3; }
+.dark .hljs-keyword { color: #ff7b72 !important; }
+.dark .hljs-string { color: #a5d6ff !important; }
+.dark .hljs-number { color: #79c0ff !important; }
+.dark .hljs-function, .dark .hljs-title { color: #d2a8ff !important; }
+.dark .hljs-comment { color: #8b949e !important; font-style: italic !important; }
+.dark .hljs-property, .dark .hljs-attr { color: #79c0ff !important; }
+.dark .hljs-built_in { color: #ffa657 !important; }
+.dark .hljs-literal { color: #ff7b72 !important; }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR STYLES
+   ═══════════════════════════════════════════════ */
 
 /* Custom Scrollbar for Conversations List */
 .conversations-list::-webkit-scrollbar {
@@ -488,6 +666,10 @@ div[style*="Edit with Lovable"],
   background: rgba(0, 0, 0, 0.3);
 }
 
+/* ═══════════════════════════════════════════════
+   ASSISTANT MESSAGE STYLES
+   ═══════════════════════════════════════════════ */
+
 /* Force transparent background on assistant messages */
 [data-message-type="assistant"],
 .assistant-message,
@@ -508,115 +690,4 @@ div[style*="Edit with Lovable"],
 
 .chat-message-assistant > div {
   background: transparent !important;
-}
-
-/* ========================================
-   CODE BLOCK GLOBAL STYLES
-   Forces consistent styling on ALL code blocks
-   ======================================== */
-
-/* Main code block container */
-.code-block {
-  background: #0a0a0a !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  margin: 16px 0 !important;
-}
-
-/* Code block header */
-.code-block > div:first-child {
-  background: #0f0f0f !important;
-  padding: 10px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Syntax highlighter container */
-.code-block pre,
-.code-block code {
-  background: #0a0a0a !important;
-  font-family: 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
-  font-size: 13px !important;
-  line-height: 20px !important;
-}
-
-/* Override react-syntax-highlighter default styles */
-.code-block pre[class*="language-"],
-.code-block code[class*="language-"] {
-  background: #0a0a0a !important;
-  text-shadow: none !important;
-}
-
-/* Ensure all token colors are applied */
-.code-block .token.comment,
-.code-block .token.prolog,
-.code-block .token.doctype,
-.code-block .token.cdata {
-  color: #6a737d !important;
-  font-style: italic !important;
-}
-
-.code-block .token.punctuation {
-  color: #e6edf3 !important;
-}
-
-.code-block .token.property,
-.code-block .token.tag,
-.code-block .token.boolean,
-.code-block .token.number,
-.code-block .token.constant,
-.code-block .token.symbol {
-  color: #79c0ff !important;
-}
-
-.code-block .token.selector,
-.code-block .token.attr-name,
-.code-block .token.string,
-.code-block .token.char,
-.code-block .token.builtin {
-  color: #a5d6ff !important;
-}
-
-.code-block .token.operator,
-.code-block .token.entity,
-.code-block .token.url,
-.code-block .token.variable {
-  color: #ffa657 !important;
-}
-
-.code-block .token.atrule,
-.code-block .token.attr-value,
-.code-block .token.function,
-.code-block .token.class-name {
-  color: #d2a8ff !important;
-}
-
-.code-block .token.keyword {
-  color: #ff7b72 !important;
-}
-
-.code-block .token.regex,
-.code-block .token.important {
-  color: #ffa657 !important;
-}
-
-/* JSON specific colors */
-.code-block .token.property {
-  color: #7ee787 !important;
-}
-
-/* Inline code styling */
-code:not([class*="language-"]):not(.code-block code) {
-  background: rgba(255, 255, 255, 0.1) !important;
-  padding: 2px 6px !important;
-  border-radius: 4px !important;
-  font-size: 13px !important;
-  font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
-  color: #f87171 !important;
-}
-
-/* Light theme inline code */
-:root code:not([class*="language-"]):not(.code-block code) {
-  background: rgba(0, 0, 0, 0.06) !important;
-  color: #e11d48 !important;
 }
