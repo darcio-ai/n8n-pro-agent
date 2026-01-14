@@ -34,10 +34,10 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   const customStyle: React.CSSProperties = {
     margin: 0,
     padding: '16px',
-    fontSize: '15px',
-    lineHeight: '1.5',
+    fontSize: '13px',
+    lineHeight: '20px',
     borderRadius: '0 0 8px 8px',
-    fontFamily: '"Fira Code", "JetBrains Mono", Consolas, monospace',
+    fontFamily: 'Monaco, Menlo, Consolas, monospace',
     background: '#1a1a1a',
   };
 
@@ -101,7 +101,7 @@ const parseMarkdown = (content: string) => {
           )}
         >
           {listItems.items.map((item, i) => (
-            <li key={i} className="text-sm text-zinc-700 dark:text-zinc-300">
+            <li key={i} className="text-chat text-zinc-700 dark:text-zinc-300">
               {parseInline(item)}
             </li>
           ))}
@@ -317,7 +317,7 @@ const parseMarkdown = (content: string) => {
     // Regular paragraph
     flushList();
     elements.push(
-      <p key={`p-${i}`} className="mb-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+      <p key={`p-${i}`} className="mb-2 text-chat leading-relaxed text-zinc-700 dark:text-zinc-300">
         {parseInline(line)}
       </p>
     );
@@ -424,7 +424,7 @@ const ChatMessage = ({ message, onDelete }: ChatMessageProps) => {
           
           <div className="prose prose-sm dark:prose-invert max-w-none">
             {isUser ? (
-              message.content ? <p className="mb-0 text-sm">{message.content}</p> : null
+              message.content ? <p className="mb-0 text-chat">{message.content}</p> : null
             ) : (
               parseMarkdown(message.content)
             )}
