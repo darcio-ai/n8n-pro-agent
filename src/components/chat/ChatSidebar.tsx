@@ -73,17 +73,21 @@ const ChatSidebar = ({
           {conversations.map((conversation) => (
             <div
               key={conversation.id}
-              className={`group relative w-full h-12 flex items-center gap-2 px-3 rounded-lg cursor-pointer transition-colors ${
+              className={`group relative min-w-[240px] h-11 flex items-center gap-3 pl-4 pr-2 py-3 rounded-lg cursor-pointer transition-colors ${
                 currentConversationId === conversation.id
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-[hsl(var(--n8n-coral))] hover:text-black"
+                  ? "bg-white/10"
+                  : "hover:bg-white/[0.08]"
               }`}
               onClick={() => onSelectConversation(conversation.id)}
             >
-              <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              <span className={`min-w-0 flex-1 truncate pr-8 ${
-                currentConversationId === conversation.id ? 'text-sidebar-active' : 'text-sidebar'
-              }`}>
+              <MessageSquare className="w-4 h-4 flex-shrink-0 text-[#9ca3af]" />
+              <span 
+                className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis text-[14px] leading-[20px] font-normal pr-8"
+                style={{ 
+                  color: currentConversationId === conversation.id ? '#ffffff' : '#e5e5e5',
+                  maxWidth: '85%'
+                }}
+              >
                 {conversation.title}
               </span>
               <DropdownMenu>
@@ -91,10 +95,11 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-6 w-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200 ease-in-out text-muted-foreground group-hover:text-black hover:bg-transparent"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-5 w-5 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200 ease-in-out hover:bg-transparent"
+                    style={{ color: '#9ca3af' }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <MoreHorizontal className="w-5 h-5 group-hover:text-[#f5f5f5]" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 bg-popover border border-border z-50">
