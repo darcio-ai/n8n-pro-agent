@@ -463,7 +463,7 @@ const Chat = () => {
       <ResizableHandle withHandle />
 
       <ResizablePanel defaultSize={80} className="min-h-0">
-        <div className="flex flex-col h-full min-h-0">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden">
           <div className="shrink-0">
             <ChatHeader />
           </div>
