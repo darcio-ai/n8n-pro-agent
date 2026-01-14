@@ -509,3 +509,114 @@ div[style*="Edit with Lovable"],
 .chat-message-assistant > div {
   background: transparent !important;
 }
+
+/* ========================================
+   CODE BLOCK GLOBAL STYLES
+   Forces consistent styling on ALL code blocks
+   ======================================== */
+
+/* Main code block container */
+.code-block {
+  background: #0a0a0a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin: 16px 0 !important;
+}
+
+/* Code block header */
+.code-block > div:first-child {
+  background: #0f0f0f !important;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Syntax highlighter container */
+.code-block pre,
+.code-block code {
+  background: #0a0a0a !important;
+  font-family: 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+}
+
+/* Override react-syntax-highlighter default styles */
+.code-block pre[class*="language-"],
+.code-block code[class*="language-"] {
+  background: #0a0a0a !important;
+  text-shadow: none !important;
+}
+
+/* Ensure all token colors are applied */
+.code-block .token.comment,
+.code-block .token.prolog,
+.code-block .token.doctype,
+.code-block .token.cdata {
+  color: #6a737d !important;
+  font-style: italic !important;
+}
+
+.code-block .token.punctuation {
+  color: #e6edf3 !important;
+}
+
+.code-block .token.property,
+.code-block .token.tag,
+.code-block .token.boolean,
+.code-block .token.number,
+.code-block .token.constant,
+.code-block .token.symbol {
+  color: #79c0ff !important;
+}
+
+.code-block .token.selector,
+.code-block .token.attr-name,
+.code-block .token.string,
+.code-block .token.char,
+.code-block .token.builtin {
+  color: #a5d6ff !important;
+}
+
+.code-block .token.operator,
+.code-block .token.entity,
+.code-block .token.url,
+.code-block .token.variable {
+  color: #ffa657 !important;
+}
+
+.code-block .token.atrule,
+.code-block .token.attr-value,
+.code-block .token.function,
+.code-block .token.class-name {
+  color: #d2a8ff !important;
+}
+
+.code-block .token.keyword {
+  color: #ff7b72 !important;
+}
+
+.code-block .token.regex,
+.code-block .token.important {
+  color: #ffa657 !important;
+}
+
+/* JSON specific colors */
+.code-block .token.property {
+  color: #7ee787 !important;
+}
+
+/* Inline code styling */
+code:not([class*="language-"]):not(.code-block code) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 13px !important;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+  color: #f87171 !important;
+}
+
+/* Light theme inline code */
+:root code:not([class*="language-"]):not(.code-block code) {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #e11d48 !important;
+}
