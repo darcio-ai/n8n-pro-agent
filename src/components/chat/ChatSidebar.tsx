@@ -80,8 +80,10 @@ const ChatSidebar = ({
               }`}
               onClick={() => onSelectConversation(conversation.id)}
             >
-              <MessageSquare className="w-4 h-4 flex-shrink-0 group-hover:text-black" />
-              <span className="min-w-0 flex-1 truncate pr-8 text-sm">
+              <MessageSquare className="w-4 h-4 flex-shrink-0" />
+              <span className={`min-w-0 flex-1 truncate pr-8 ${
+                currentConversationId === conversation.id ? 'text-sidebar-active' : 'text-sidebar'
+              }`}>
                 {conversation.title}
               </span>
               <DropdownMenu>

@@ -13,6 +13,17 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['Monaco', 'Menlo', 'Consolas', 'monospace'],
+      },
+      fontSize: {
+        'chat': ['15px', { lineHeight: '24px', fontWeight: '400' }],
+        'sidebar': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'sidebar-active': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+        'button': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+        'code': ['13px', { lineHeight: '20px' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
