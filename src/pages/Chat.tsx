@@ -325,7 +325,12 @@ const Chat = () => {
             if (a.mimeType.startsWith("text/") || a.mimeType === "application/json") {
               try {
                 const base64Content = a.url.split(",")[1];
-                const decodedContent = atob(base64Content);
+                const binaryString = atob(base64Content);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                  bytes[i] = binaryString.charCodeAt(i);
+                }
+                const decodedContent = new TextDecoder('utf-8').decode(bytes);
                 parts.push({
                   type: "text",
                   text: `[Arquivo: ${a.name}]\n${decodedContent}`,
@@ -373,7 +378,7 @@ const Chat = () => {
       }
 
       const reader = response.body.getReader();
-      const decoder = new TextDecoder();
+      const decoder = new TextDecoder('utf-8');
       let textBuffer = "";
       let streamDone = false;
 
