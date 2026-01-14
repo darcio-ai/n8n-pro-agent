@@ -69,19 +69,19 @@ const ChatSidebar = ({
 
       {/* Conversations list */}
       <ScrollArea className="flex-1 px-3">
-        <div className="space-y-1 pb-3">
+        <div className="space-y-1 pb-3 overflow-x-hidden">
           {conversations.map((conversation) => (
-          <div
-            key={conversation.id}
-            className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-              currentConversationId === conversation.id
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-[hsl(var(--n8n-coral))] hover:text-black"
-            }`}
-            onClick={() => onSelectConversation(conversation.id)}
-          >
-            <MessageSquare className="w-4 h-4 flex-shrink-0 group-hover:text-black" />
-              <span className="flex-1 truncate text-sm">
+            <div
+              key={conversation.id}
+              className={`group relative w-full h-12 flex items-center gap-2 px-3 rounded-lg cursor-pointer transition-colors ${
+                currentConversationId === conversation.id
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground hover:bg-[hsl(var(--n8n-coral))] hover:text-black"
+              }`}
+              onClick={() => onSelectConversation(conversation.id)}
+            >
+              <MessageSquare className="w-4 h-4 flex-shrink-0 group-hover:text-black" />
+              <span className="min-w-0 flex-1 truncate pr-8 text-sm">
                 {conversation.title}
               </span>
               <DropdownMenu>
@@ -89,7 +89,7 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 text-muted-foreground group-hover:text-black hover:bg-transparent"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-6 w-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200 ease-in-out text-muted-foreground group-hover:text-black hover:bg-transparent"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="w-4 h-4" />
