@@ -23,42 +23,77 @@ const languageMap: Record<string, string> = {
   terminal: 'bash',
 };
 
-// Auto-detect language from code content
+// Auto-detect language from code content with aggressive detection
 const detectLanguage = (code: string): string => {
   const trimmed = code.trim();
+  const lines = trimmed.split('\n');
+  const firstLine = lines[0]?.toLowerCase() || '';
   
-  // JSON detection
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || 
-      (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-    try {
-      JSON.parse(trimmed);
-      return 'json';
-    } catch {
-      // Not valid JSON, continue detection
+  // JSON detection - more aggressive
+  if ((trimmed.startsWith('{') || trimmed.startsWith('[')) ||
+      firstLine.includes('"') && (trimmed.includes('":'))) {
+    // Check if it looks like JSON structure
+    if (/^\s*[\[{]/.test(trimmed) || /["']\w+["']\s*:/.test(trimmed)) {
+      try {
+        JSON.parse(trimmed);
+        return 'json';
+      } catch {
+        // Might still be JSON-like, check for common patterns
+        if (/["']\w+["']\s*:\s*["'\d\[{]/.test(trimmed)) {
+          return 'json';
+        }
+      }
     }
   }
   
-  // Bash/Shell detection
+  // Bash/Shell detection - very aggressive
+  const bashCommands = [
+    'curl', 'wget', 'npm', 'yarn', 'pnpm', 'bun', 'cd', 'ls', 'mkdir', 'rm', 'cp', 'mv', 
+    'cat', 'echo', 'export', 'source', 'chmod', 'chown', 'sudo', 'apt', 'apt-get', 'brew', 
+    'pip', 'pip3', 'git', 'docker', 'kubectl', 'ssh', 'scp', 'tar', 'grep', 'awk', 'sed',
+    'find', 'touch', 'head', 'tail', 'sort', 'uniq', 'wc', 'xargs', 'which', 'whereis',
+    'man', 'less', 'more', 'vi', 'vim', 'nano', 'node', 'python', 'python3', 'ruby', 'go',
+    'make', 'cmake', 'gcc', 'g++', 'rustc', 'cargo', 'deno', 'npx', 'bunx', 'pnpx'
+  ];
+  
   const bashPatterns = [
-    /^(curl|wget|npm|yarn|pnpm|bun|cd|ls|mkdir|rm|cp|mv|cat|echo|export|source|chmod|chown|sudo|apt|brew|pip|git|docker|kubectl)\s/m,
     /^\$\s/m,
     /^#!\s*\/bin\/(bash|sh|zsh)/,
-    /\|\s*(grep|awk|sed|xargs|head|tail|sort|uniq)/,
+    /\|\s*(grep|awk|sed|xargs|head|tail|sort|uniq|wc)/,
+    /&&\s*(cd|npm|yarn|git|docker)/,
+    /--[\w-]+/,
+    /\$\{?\w+\}?/,
+    /^\s*#\s+\w/m,
   ];
+  
+  // Check first word of any line against bash commands
+  for (const line of lines) {
+    const firstWord = line.trim().split(/\s+/)[0]?.toLowerCase();
+    if (firstWord && bashCommands.includes(firstWord)) {
+      return 'bash';
+    }
+  }
+  
   if (bashPatterns.some(pattern => pattern.test(trimmed))) {
     return 'bash';
   }
   
   // JavaScript/TypeScript detection
   const jsPatterns = [
-    /\b(const|let|var|function|async|await|import|export|class|extends|interface|type)\b/,
-    /=>\s*{/,
-    /\.(then|catch|finally)\(/,
-    /console\.(log|error|warn)/,
+    /\b(const|let|var|function|async|await|import|export|class|extends|implements)\b/,
+    /=>\s*[\({]/,
+    /\.(then|catch|finally|map|filter|reduce|forEach)\(/,
+    /console\.(log|error|warn|info|debug)/,
+    /require\s*\(/,
+    /module\.exports/,
+    /new\s+\w+\(/,
+    /\bthis\./,
   ];
+  
   if (jsPatterns.some(pattern => pattern.test(trimmed))) {
     // Check if TypeScript
-    if (/\b(interface|type|:\s*(string|number|boolean|any|void|never))\b/.test(trimmed)) {
+    if (/\b(interface|type|enum|:\s*(string|number|boolean|any|void|never|unknown|object)\b)/.test(trimmed) ||
+        /<\w+(\s*,\s*\w+)*>/.test(trimmed)) {
       return 'typescript';
     }
     return 'javascript';
@@ -66,37 +101,51 @@ const detectLanguage = (code: string): string => {
   
   // Python detection
   const pythonPatterns = [
-    /^(def|class|import|from|if __name__|print\(|async def)\s/m,
+    /^(def|class|import|from|if\s+__name__|print\s*\(|async\s+def)\s/m,
     /:\s*$/m,
     /\bself\./,
+    /^\s*(elif|except|finally|with|yield|lambda)\b/m,
+    /^\s*@\w+/m,
+    /\bNone\b/,
+    /\bTrue\b|\bFalse\b/,
   ];
+  
   if (pythonPatterns.some(pattern => pattern.test(trimmed))) {
     return 'python';
   }
   
   // SQL detection
-  const sqlPatterns = [
-    /\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|FROM|WHERE|JOIN|TABLE|INDEX)\b/i,
-  ];
-  if (sqlPatterns.some(pattern => pattern.test(trimmed))) {
+  if (/\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|FROM|WHERE|JOIN|TABLE|INDEX|INTO|VALUES|SET|ORDER\s+BY|GROUP\s+BY|HAVING|LIMIT|OFFSET)\b/i.test(trimmed)) {
     return 'sql';
   }
   
-  // HTML detection
-  if (/<[a-z][\s\S]*>/i.test(trimmed) && /<\/[a-z]+>/i.test(trimmed)) {
+  // HTML/JSX detection
+  if (/<[a-z][\s\S]*>/i.test(trimmed) && (/<\/[a-z]+>/i.test(trimmed) || /\/>/i.test(trimmed))) {
+    // Check if it's JSX (has JS expressions)
+    if (/\{[^}]+\}/.test(trimmed) && /className=/.test(trimmed)) {
+      return 'jsx';
+    }
     return 'html';
   }
   
   // CSS detection
-  if (/[.#][\w-]+\s*{[\s\S]*}/.test(trimmed) || /@(media|keyframes|import)/.test(trimmed)) {
+  if (/[.#@][\w-]+\s*\{[\s\S]*\}/.test(trimmed) || 
+      /@(media|keyframes|import|font-face)/.test(trimmed) ||
+      /:\s*(flex|grid|block|inline|none|absolute|relative|fixed)/.test(trimmed)) {
     return 'css';
   }
   
   // YAML detection
-  if (/^[\w-]+:\s*.+$/m.test(trimmed) && !trimmed.includes('{')) {
+  if (/^[\w-]+:\s*.+$/m.test(trimmed) && !trimmed.includes('{') && !trimmed.includes('(')) {
     return 'yaml';
   }
   
+  // Markdown detection
+  if (/^#{1,6}\s/.test(trimmed) || /^\*\*[^*]+\*\*/.test(trimmed) || /^[-*]\s/.test(trimmed)) {
+    return 'markdown';
+  }
+  
+  // Default to plaintext with basic highlighting
   return 'text';
 };
 
