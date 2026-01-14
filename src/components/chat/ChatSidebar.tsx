@@ -61,16 +61,16 @@ const ChatSidebar = ({
       <ScrollArea className="flex-1 px-3">
         <div className="space-y-1 pb-3">
           {conversations.map((conversation) => (
-            <div
-              key={conversation.id}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                currentConversationId === conversation.id
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-              }`}
-              onClick={() => onSelectConversation(conversation.id)}
-            >
-              <MessageSquare className="w-4 h-4 flex-shrink-0" />
+          <div
+            key={conversation.id}
+            className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+              currentConversationId === conversation.id
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground hover:bg-[hsl(var(--n8n-coral))] hover:text-black"
+            }`}
+            onClick={() => onSelectConversation(conversation.id)}
+          >
+            <MessageSquare className="w-4 h-4 flex-shrink-0 group-hover:text-black" />
               <span className="flex-1 truncate text-sm">
                 {conversation.title}
               </span>
@@ -79,7 +79,7 @@ const ChatSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 text-sidebar-foreground hover:bg-sidebar-accent"
+                    className="h-6 w-6 text-sidebar-foreground group-hover:text-black hover:bg-transparent"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="w-4 h-4" />
