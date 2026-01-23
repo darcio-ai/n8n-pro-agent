@@ -323,9 +323,18 @@ const parseMarkdown = (content: string) => {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    
+    // Normalize line for code block detection
+    const trimmedLine = line.trim();
+    // Normalize different types of backticks and remove zero-width characters
+    const normalizedLine = trimmedLine
+      .replace(/[`´''ˋ]/g, '`')  // Convert various quote/backtick types
+      .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');  // Remove zero-width and non-breaking spaces
 
-    // Code block start/end
-    if (line.startsWith("```")) {
+    // Code block start/end - use regex for more robust detection
+    const isCodeBlockDelimiter = /^`{3,}\s*\w*\s*$/.test(normalizedLine);
+    
+    if (isCodeBlockDelimiter) {
       if (currentCodeBlock) {
         elements.push(
           <CodeBlock
@@ -337,7 +346,9 @@ const parseMarkdown = (content: string) => {
         currentCodeBlock = null;
       } else {
         flushList();
-        const language = line.slice(3).trim();
+        // Extract language from the normalized line
+        const langMatch = normalizedLine.match(/^`{3,}\s*(\w*)\s*$/);
+        const language = langMatch?.[1] || undefined;
         currentCodeBlock = { language: language || undefined, code: [] };
       }
       continue;
